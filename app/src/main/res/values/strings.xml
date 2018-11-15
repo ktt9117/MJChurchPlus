@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MJChurchPlus</string>
+
+    <string name="list_title">설교</string>
+    <string name="sermon_detail_title">설교 영상</string>
+
+    <string name="introduce_title">소개</string>
+    <string name="training_title">훈련</string>
+
+</resources>

@@ -1,0 +1,63 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "org.mukdongjeil.mjchurch"
+        minSdkVersion 17
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+    sourceSets {
+        test {
+            resources.srcDirs += ['src/test/resources']
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation files('libs/jericho-html-3.3.jar')
+    //implementation files('libs/YouTubeAndroidPlayerApi.jar')
+
+    /** androidx library */
+    implementation "androidx.appcompat:appcompat:1.0.2"
+    implementation "androidx.recyclerview:recyclerview:1.0.0"
+    implementation "androidx.preference:preference:1.0.0"
+    implementation "androidx.constraintlayout:constraintlayout:1.1.2"
+    implementation "com.google.android.material:material:1.0.0-rc01"
+
+    /** architecture component */
+    implementation "com.firebase:firebase-jobdispatcher:$firebase_jobdispatcher_version"
+    implementation "androidx.room:room-runtime:2.0.0-rc01"
+    annotationProcessor "androidx.room:room-compiler:2.0.0-rc01"
+    implementation "androidx.lifecycle:lifecycle-runtime:2.0.0-rc01"
+    implementation "androidx.lifecycle:lifecycle-extensions:2.0.0-rc01"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:2.0.0-rc01"
+    implementation "androidx.lifecycle:lifecycle-livedata:2.0.0-rc01"
+    annotationProcessor "androidx.lifecycle:lifecycle-compiler:2.0.0-rc01"
+
+    /** utilities **/
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+
+    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:9.0.0'
+
+    /** test library */
+    testImplementation "junit:junit:$junit_version"
+    androidTestImplementation 'androidx.test:runner:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+}

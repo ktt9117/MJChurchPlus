@@ -1,0 +1,77 @@
+<div class="contents bbs_list">
+                        <!--S:view_top-->
+                        <ul class="view_top">
+                        <li>
+                          <span class="bbs_ttl">
+                              2018.04.15 요셉강해(14) - 야곱이 자녀들을 축복하다.(3)
+                          </span>
+                          <span class="bbs_writer">김희준</span>
+                          <span class="bbs_date">2018-04-17</span>
+                          <span class="bbs_attch"></span>
+                          <span class="bbs_count">52</span>
+                        </li>
+                        </ul>
+                        <!--E:view_top-->
+                        <!--S:bbs_substance-->
+                        <div class="bbs_substance">
+                        <div class="bbs_substance_p"><div>(창 49:28) 이들은 이스라엘의 열두 지파라 이와 같이 그들의 아버지가 그들에게 말하고 그들에게 축복하였으니 곧 그들 각 사람의 분량대로 축복하였더라<br /><br>(창 49:29) 그가 그들에게 명하여 이르되 내가 내 조상들에게로 돌아가리니 나를 헷 사람 에브론의 밭에 있는 굴에 우리 선조와 함께 장사하라<br /><br>(창 49:30) 이 굴은 가나안 땅 마므레 앞 막벨라 밭에 있는 것이라 아브라함이 헷 사람 에브론에게서 밭과 함께 사서 그의 매장지를 삼았으므로<br /><br>(창 49:31) 아브라함과 그의 아내 사라가 거기 장사되었고 이삭과 그의 아내 리브가도 거기 장사되었으며 나도 레아를 그 곳에 장사하였노라<br /><br>(창 49:32) 이 밭과 거기 있는 굴은 헷 사람에게서 산 것이니라<br /><br>(창 49:33) 야곱이 아들에게 명하기를 마치고 그 발을 침상에 모으고 숨을 거두니 그의 백성에게로 돌아갔더라<br /><br> </div><br><br><iframe width="560" height="315" src="https://www.youtube.com/embed/hKsQL_aLq3U" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe><br><br><div> </div></div>
+
+                        </div>
+                        <!--E:bbs_substance-->
+                        <!-- 파일리스트 시작 -->
+
+                        <!-- 파일리스트 종료 -->
+
+                        <!--S:btn_area-->
+                        <div class="btn_area2">
+
+                        </div>
+                        <div class="clearer"></div>
+                        <!--E:btn_area-->
+
+                        <!--S:reply_write-->
+                          <table cellpadding="0" cellspacing="0" border="0" class="reply_write">
+                          <tbody>
+
+                          <tr><th colspan="4">한줄답글<a href="#" id="btnCmtWrite" class="btn_confirm">등록</a></th></tr>
+                          <tr>
+                            <th colspan="4">
+                              <textarea class="textarea02" name="comment" id="comment"></textarea>
+                            </th>
+                          </tr>
+                          </tbody>
+                          </table>
+                        <!--E:reply_write-->
+
+                        <!--S:reply_list-->
+                        <ul class="reply_list">
+
+                        </ul>
+                        <div class="clearer"></div>
+                        <!--E:reply_list-->
+
+                        <!--S:btn_area-->
+                        <div class="btn_area">
+
+
+
+
+
+                            <a href="javascript:goView(206873)" class="btn50">이전</a>
+
+
+
+                        <a href="javascript:goPage(1)" class='btn50'>목록</a>
+
+
+
+
+
+                            <a href="javascript:goView(206140)" class="btn50">다음</a>
+
+
+                        </div>
+                        <div class="clearer"></div>
+                        <!--E:btn_area-->
+
+                        </div>
