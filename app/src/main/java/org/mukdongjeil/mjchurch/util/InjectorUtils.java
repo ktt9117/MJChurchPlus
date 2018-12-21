@@ -33,19 +33,19 @@ import org.mukdongjeil.mjchurch.ui.training.TrainingViewModelFactory;
  */
 public class InjectorUtils {
 
-    public static SermonNetworkDataSource provideSermonNetworkDataSource(Context context) {
+    public static final SermonNetworkDataSource provideSermonNetworkDataSource(Context context) {
         provideRepository(context.getApplicationContext());
         AppExecutors executors = AppExecutors.getInstance();
         return SermonNetworkDataSource.getInstance(context.getApplicationContext(), executors);
     }
 
-    public static SermonReplyNetworkDataSource provideSermonReplyNetworkDataSource(Context context) {
+    public static final SermonReplyNetworkDataSource provideSermonReplyNetworkDataSource(Context context) {
         provideRepository(context.getApplicationContext());
         AppExecutors executors = AppExecutors.getInstance();
         return SermonReplyNetworkDataSource.getInstance(context.getApplicationContext(), executors);
     }
 
-    public static ChurchRepository provideRepository(Context context) {
+    public static final ChurchRepository provideRepository(Context context) {
         ChurchDatabase database = ChurchDatabase.getInstance(context.getApplicationContext());
         AppExecutors executors = AppExecutors.getInstance();
         SermonNetworkDataSource networkDataSource =
@@ -56,22 +56,22 @@ public class InjectorUtils {
                 networkDataSource, replyNetworkDataSource, executors);
     }
 
-    public static SermonViewModelFactory provideSermonViewModelFactory(Context context) {
+    public static final SermonViewModelFactory provideSermonViewModelFactory(Context context) {
         ChurchRepository repository = provideRepository(context.getApplicationContext());
         return new SermonViewModelFactory(repository);
     }
 
-    public static IntroduceViewModelFactory provideIntroduceViewModelFactory(Context context) {
+    public static final IntroduceViewModelFactory provideIntroduceViewModelFactory(Context context) {
         ChurchRepository repository = provideRepository(context.getApplicationContext());
         return new IntroduceViewModelFactory(repository);
     }
 
-    public static TrainingViewModelFactory provideTrainingViewModelFactory(Context context) {
+    public static final TrainingViewModelFactory provideTrainingViewModelFactory(Context context) {
         ChurchRepository repository = provideRepository(context.getApplicationContext());
         return new TrainingViewModelFactory(repository);
     }
 
-    public static SermonDetailActivityViewModelFactory
+    public static final SermonDetailActivityViewModelFactory
         provideSermonDetailActivityViewModelFactory(Context context, int bbsNo) {
         ChurchRepository repository = provideRepository(context.getApplicationContext());
         return new SermonDetailActivityViewModelFactory(repository, bbsNo);
