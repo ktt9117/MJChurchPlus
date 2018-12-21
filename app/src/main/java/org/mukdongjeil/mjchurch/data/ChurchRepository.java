@@ -11,6 +11,7 @@ import org.mukdongjeil.mjchurch.data.database.entity.SermonReplyEntity;
 import org.mukdongjeil.mjchurch.data.database.entity.TrainingEntity;
 import org.mukdongjeil.mjchurch.data.network.SermonNetworkDataSource;
 import org.mukdongjeil.mjchurch.data.network.SermonReplyNetworkDataSource;
+import org.mukdongjeil.mjchurch.util.DateUtil;
 
 import java.util.List;
 
@@ -21,7 +22,6 @@ public class ChurchRepository {
     private static final String TAG = ChurchRepository.class.getSimpleName();
 
     private static final String LAST_FETCH_TIME_IN_MILLIS = "lastFetchTimeInMillis";
-    private static final long A_DAY_TIME_MILLIS = 1000 * 60 * 60 * 24;
     private static final Object LOCK = new Object();
     private static ChurchRepository sInstance;
     private final SermonDao mSermonDao;
@@ -132,7 +132,8 @@ public class ChurchRepository {
             SharedPreferences prefs =
                     PreferenceManager.getDefaultSharedPreferences(mSermonNetworkDataSource.getContext());
             long lastFetchTimeInMillis = prefs.getLong(LAST_FETCH_TIME_IN_MILLIS, 0);
-            if (lastFetchTimeInMillis == 0 || (System.currentTimeMillis() - lastFetchTimeInMillis) >= A_DAY_TIME_MILLIS) {
+            if (lastFetchTimeInMillis == 0 ||
+                    (System.currentTimeMillis() - lastFetchTimeInMillis) >= DateUtil.A_DAY_TIME_MILLIS) {
                 prefs.edit().putLong(LAST_FETCH_TIME_IN_MILLIS, System.currentTimeMillis()).apply();
                 Log.i(TAG, "fetch need caused by lastFetchTime has passed a day.");
                 return true;

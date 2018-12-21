@@ -64,7 +64,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/Applications/Android%20Studio.app/Contents/plugins/android/lib/android.jar!/images/material_design_icons/content/ic_send_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/Applications/Android%20Studio.app/Contents/plugins/android/lib/android.jar!/images/material_design_icons/social/ic_sentiment_very_satisfied_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -74,9 +74,9 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="color" value="4597b5" />
+                            <entry key="color" value="f6bb43" />
                             <entry key="height" value="48" />
-                            <entry key="outputName" value="ic_send_48dp" />
+                            <entry key="outputName" value="ic_sentiment_very_satisfied_48dp" />
                             <entry key="overrideSize" value="true" />
                             <entry key="sourceFile" value="$USER_HOME$/Downloads/ic_list_training.svg" />
                             <entry key="width" value="48" />

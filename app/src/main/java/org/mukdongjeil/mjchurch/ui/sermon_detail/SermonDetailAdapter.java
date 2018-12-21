@@ -10,9 +10,8 @@ import android.widget.TextView;
 
 import org.mukdongjeil.mjchurch.R;
 import org.mukdongjeil.mjchurch.data.database.entity.SermonReplyEntity;
+import org.mukdongjeil.mjchurch.util.DateUtil;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -45,10 +44,7 @@ public class SermonDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         SermonReplyEntity entity = mList.get(position);
         replyViewHolder.contentView.setText(entity.getContent());
         replyViewHolder.writerView.setText(entity.getWriter().getDisplayName());
-        // TODO: improvement - change the date format with more user friendly (e.g. today, yesterday ...)
-        replyViewHolder.dateView.setText(new SimpleDateFormat("yyyy년 MM월 dd일 hh시 mm분")
-                .format(new Date(entity.getCreatedAt())));
-
+        replyViewHolder.dateView.setText(DateUtil.convertReadableDateTime(entity.getCreatedAt()));
         // TODO: feature - display avatar image on avatarView using entity.getAvatarUri()
 //        if (entity.getWriter() != null && TextUtils.isEmpty(entity.getWriter().getAvatarPath()) == false) {
 //            String avatarPath = entity.getWriter().getAvatarPath();
