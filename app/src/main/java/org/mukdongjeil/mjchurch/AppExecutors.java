@@ -64,9 +64,7 @@ public class AppExecutors {
         return mainThread;
     }
 
-    public Executor networkIO() {
-        return networkIO;
-    }
+    public Executor networkIO() { return networkIO; }
 
     private static class MainThreadExecutor implements Executor {
         private Handler mainThreadHandler = new Handler(Looper.getMainLooper());

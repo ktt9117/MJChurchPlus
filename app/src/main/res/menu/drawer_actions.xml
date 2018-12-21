@@ -18,13 +18,16 @@
     <item
         android:id="@+id/sermon_menu_item"
         android:icon="@drawable/ic_list_worship"
-        android:title="@string/list_title" />
+        android:checkable="false"
+        android:title="@string/title_sermon_list" />
     <item
         android:id="@+id/welcome_menu_item"
         android:icon="@drawable/ic_list_welcome"
-        android:title="@string/introduce_title" />
+        android:checkable="false"
+        android:title="@string/title_welcome" />
     <item
         android:id="@+id/training_menu_item"
         android:icon="@drawable/ic_list_training"
-        android:title="@string/training_title" />
+        android:checkable="false"
+        android:title="@string/title_training" />
 </menu>

@@ -1,13 +1,13 @@
 package org.mukdongjeil.mjchurch.data.database.dao;
 
+import org.mukdongjeil.mjchurch.data.database.entity.IntroduceEntity;
 import org.mukdongjeil.mjchurch.data.database.entity.SermonEntity;
-import org.mukdongjeil.mjchurch.data.database.entity.SermonReplyEntity;
+import org.mukdongjeil.mjchurch.data.database.entity.TrainingEntity;
 
 import java.util.List;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -16,20 +16,27 @@ import androidx.room.Query;
 public interface SermonDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(SermonEntity... sermon);
+    void insertSermon(SermonEntity... sermon);
 
     @Query("SELECT * FROM sermon ORDER BY bbsNo DESC")
     LiveData<List<SermonEntity>> getSermonList();
 
+    @Query("SELECT * FROM sermon ORDER BY bbsNo DESC")
+    List<SermonEntity> getSermonListNotLiveData();
+
     @Query("SELECT * FROM sermon WHERE bbsNo = :bbsNo")
     LiveData<SermonEntity> getSermonEntity(int bbsNo);
 
-    @Query("SELECT * FROM sermonReply WHERE bbsNo = :bbsNo ORDER BY date DESC")
-    LiveData<List<SermonReplyEntity>> getSermonReplyList(int bbsNo);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertIntroduce(IntroduceEntity... entity);
+
+    @Query("SELECT * FROM introduce")
+    LiveData<List<IntroduceEntity>> getIntroduceList();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(SermonReplyEntity sermonReply);
+    void insertTraining(TrainingEntity... entity);
 
-    @Delete
-    void deleteReply(SermonReplyEntity entity);
+    @Query("SELECT * FROM training")
+    LiveData<List<TrainingEntity>> getTrainingList();
+
 }

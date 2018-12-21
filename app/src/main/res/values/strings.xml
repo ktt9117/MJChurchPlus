@@ -1,10 +1,15 @@
 <resources>
-    <string name="app_name">MJChurchPlus</string>
+    <string name="app_name">묵동제일교회</string>
 
-    <string name="list_title">설교</string>
-    <string name="sermon_detail_title">설교 영상</string>
+    <string name="title_sermon_list">주일 설교</string>
+    <string name="title_sermon_detail">설교 영상</string>
+    <string name="title_welcome">환영합니다</string>
+    <string name="title_training">양육과 훈련</string>
 
-    <string name="introduce_title">소개</string>
-    <string name="training_title">훈련</string>
+    <string name="hint_input_reply_here">댓글을 남겨주세요.</string>
+    <string name="application_quit_message">앱을 종료하려면 뒤로가기를 한번 더 누르세요</string>
 
+    <string name="button_title_view_sermon">설교 보기</string>
+    <string name="get_data_failed_message">인터넷에 연결되지 않았거나 알 수 없는 이유로 데이터를 가져오지 못했습니다. 나중에 다시 실행해 주세요.</string>
+    <string name="leave_reply_message">처음으로 댓글을 남겨보세요!</string>
 </resources>

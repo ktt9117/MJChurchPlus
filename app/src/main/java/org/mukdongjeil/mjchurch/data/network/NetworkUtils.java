@@ -32,7 +32,7 @@ public final class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
-    private static final String BASE_URL = "http://mukdongjeil.hompee.org";
+    public static final String BASE_URL = "http://mukdongjeil.hompee.org";
     private static final String BASE_URL_APPENDIX_PREFIX = "m/board/index.hpc";
 
     private static final String MENU_ID_PARAM = "menuId";
@@ -44,15 +44,36 @@ public final class NetworkUtils {
     private static final String MENU_TYPE = "1";
     private static final String NEW_MENU_AT = "true";
 
+    private static final String WELCOME_URL = BASE_URL + "/m/html/index.hpc?menuId=1749&topMenuId=1&menuType=27&newmenuAt=false&tPage=1";
+    private static final String TRAINING_URL = BASE_URL + "/m/html/index.hpc?menuId=10005607&topMenuId=3&menuType=27&newmenuAt=true&tPage=1";
 
     private static final int SUNDAY_MORNING_WORSHIP_ID = 10004043;
-    private static final int SUNDAY_AFTERNOON_WORSHIP_ID = 10004044;
-    private static final int WEDNESDAY_WORSHIP_ID = 10004487;
-    private static final int FRIDAY_WORSHIP_ID = 10006470;
 
     public static URL getUrl() {
         String menuIdQuery = Integer.toString(SUNDAY_MORNING_WORSHIP_ID);
         return buildUrlWithLocationQuery(menuIdQuery);
+    }
+
+    public static URL getWelcomeUrl() {
+        try {
+            URL url = new URL(WELCOME_URL);
+            Log.v(TAG, "getWelcomUrl : " + url);
+            return url;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static URL getTrainingUrl() {
+        try {
+            URL url = new URL(TRAINING_URL);
+            Log.v(TAG, "getTrainingUrl : " + url);
+            return url;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static URL makeCompleteUrl(String queryParams) {
@@ -96,7 +117,7 @@ public final class NetworkUtils {
      * @return The contents of the HTTP response, null if no response
      * @throws IOException Related to network and stream reading
      */
-    static String getResponseFromHttpUrl(URL url) throws IOException {
+    public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {
             InputStream in = urlConnection.getInputStream();

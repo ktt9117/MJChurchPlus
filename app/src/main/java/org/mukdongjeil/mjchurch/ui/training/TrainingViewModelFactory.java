@@ -1,20 +1,20 @@
-package org.mukdongjeil.mjchurch.ui.sermons;
+package org.mukdongjeil.mjchurch.ui.training;
 
 import org.mukdongjeil.mjchurch.data.ChurchRepository;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-public class MainViewModelFactory extends ViewModelProvider.NewInstanceFactory {
+public class TrainingViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
     private final ChurchRepository mRepository;
 
-    public MainViewModelFactory(ChurchRepository repository) {
+    public TrainingViewModelFactory(ChurchRepository repository) {
         this.mRepository = repository;
     }
 
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
-        return (T) new MainActivityViewModel(mRepository);
+        return (T) new TrainingViewModel(mRepository);
     }
 }

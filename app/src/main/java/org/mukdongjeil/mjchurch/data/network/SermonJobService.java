@@ -7,16 +7,16 @@ import com.firebase.jobdispatcher.JobService;
 
 import org.mukdongjeil.mjchurch.util.InjectorUtils;
 
-public class ChurchFirebaseJobService extends JobService {
-    private static final String LOG_TAG = ChurchFirebaseJobService.class.getSimpleName();
+public class SermonJobService extends JobService {
+    private static final String LOG_TAG = SermonJobService.class.getSimpleName();
 
     @Override
     public boolean onStartJob(final JobParameters jobParameters) {
         Log.d(LOG_TAG, "Job service started");
 
         SermonNetworkDataSource networkDataSource =
-                InjectorUtils.provideNetworkDataSource(this.getApplicationContext());
-        networkDataSource.fetchSermon();
+                InjectorUtils.provideSermonNetworkDataSource(this.getApplicationContext());
+        networkDataSource.fetch();
 
         jobFinished(jobParameters, false);
 

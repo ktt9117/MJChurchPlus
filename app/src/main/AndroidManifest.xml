@@ -3,6 +3,7 @@
     package="org.mukdongjeil.mjchurch">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
@@ -13,7 +14,7 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.sermons.MainActivity"
+            android:name=".ui.MainActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,6 +24,7 @@
 
         <activity
             android:name=".ui.sermon_detail.SermonDetailActivity"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" >
         </activity>
 
@@ -30,10 +32,10 @@
             android:name=".data.network.SermonSyncIntentService"
             android:exported="false" />
 
-        <!-- This is the Service declaration used in conjunction with FirebaseJobDispatcher -->
         <service
-            android:name=".data.network.ChurchFirebaseJobService"
-            android:exported="false">
+            android:name=".data.network.SermonJobService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" >
             <intent-filter>
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
             </intent-filter>
