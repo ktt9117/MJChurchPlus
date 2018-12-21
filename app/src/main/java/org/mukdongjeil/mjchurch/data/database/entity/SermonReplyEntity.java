@@ -1,44 +1,38 @@
 package org.mukdongjeil.mjchurch.data.database.entity;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
+import com.google.firebase.firestore.Exclude;
 
-@Entity(tableName = "sermonReply")
 public class SermonReplyEntity {
 
-    @PrimaryKey(autoGenerate = true)
-    private int id;
-    private int bbsNo;
+    private String documentId;
+    private long createdAt;
     private String content;
-    private String writer;
-    private String date;
+    private User writer;
 
-    // 'id' is PrimaryKey and has autogenerate attr. so you can pass '0' value always for id variable;
-    public SermonReplyEntity(int id, int bbsNo, String content, String writer, String date) {
-        this.id = id;
-        this.bbsNo = bbsNo;
+    public SermonReplyEntity() {}
+
+    public SermonReplyEntity(String content, User writer, long createdAt) {
         this.content = content;
         this.writer = writer;
-        this.date = date;
+        this.createdAt = createdAt;
     }
 
-    public int getId() {
-        return id;
-    }
+    @Exclude
+    public String getDocumentId() { return documentId; }
 
-    public int getBbsNo() {
-        return bbsNo;
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
     }
 
     public String getContent() {
         return content;
     }
 
-    public String getWriter() {
+    public User getWriter() {
         return writer;
     }
 
-    public String getDate() {
-        return date;
+    public long getCreatedAt() {
+        return createdAt;
     }
 }

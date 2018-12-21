@@ -3,14 +3,16 @@ package org.mukdongjeil.mjchurch.data.database;
 import android.content.Context;
 
 import org.mukdongjeil.mjchurch.data.database.dao.SermonDao;
+import org.mukdongjeil.mjchurch.data.database.entity.IntroduceEntity;
 import org.mukdongjeil.mjchurch.data.database.entity.SermonEntity;
-import org.mukdongjeil.mjchurch.data.database.entity.SermonReplyEntity;
+import org.mukdongjeil.mjchurch.data.database.entity.TrainingEntity;
 
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {SermonEntity.class, SermonReplyEntity.class}, version = 1, exportSchema = false)
+@Database(entities = {SermonEntity.class, IntroduceEntity.class, TrainingEntity.class},
+            version = 1, exportSchema = false)
 public abstract class ChurchDatabase extends RoomDatabase {
     public abstract SermonDao sermonDao();
 

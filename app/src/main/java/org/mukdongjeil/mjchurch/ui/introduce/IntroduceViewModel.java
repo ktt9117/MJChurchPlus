@@ -8,12 +8,12 @@ import java.util.List;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-public class MainActivityViewModel extends ViewModel {
+public class SermonListViewModel extends ViewModel {
 
     private final ChurchRepository mRepository;
     private final LiveData<List<SermonEntity>> mSermonList;
 
-    public MainActivityViewModel(ChurchRepository repository) {
+    public SermonListViewModel(ChurchRepository repository) {
         mRepository = repository;
         mSermonList = mRepository.getSermonList();
     }

@@ -12,7 +12,7 @@
          the large forecast numbers in the forecast list -->
     <dimen name="sermon_title_text_size">18dp</dimen>
 
-    <dimen name="sermon_space">4dp</dimen>
+    <dimen name="sermon_space">16dp</dimen>
 
     <!-- Allows us to add additional padding for different screen sizes-->
     <dimen name="list_item_icon_margin_right">24dp</dimen>

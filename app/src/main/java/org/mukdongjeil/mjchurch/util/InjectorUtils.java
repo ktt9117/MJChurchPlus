@@ -22,18 +22,27 @@ import org.mukdongjeil.mjchurch.AppExecutors;
 import org.mukdongjeil.mjchurch.data.ChurchRepository;
 import org.mukdongjeil.mjchurch.data.database.ChurchDatabase;
 import org.mukdongjeil.mjchurch.data.network.SermonNetworkDataSource;
+import org.mukdongjeil.mjchurch.data.network.SermonReplyNetworkDataSource;
+import org.mukdongjeil.mjchurch.ui.introduce.IntroduceViewModelFactory;
 import org.mukdongjeil.mjchurch.ui.sermon_detail.SermonDetailActivityViewModelFactory;
-import org.mukdongjeil.mjchurch.ui.sermons.MainViewModelFactory;
+import org.mukdongjeil.mjchurch.ui.sermons.SermonViewModelFactory;
+import org.mukdongjeil.mjchurch.ui.training.TrainingViewModelFactory;
 
 /**
  * Provides static methods to inject the various classes needed for Sunshine
  */
 public class InjectorUtils {
 
-    public static SermonNetworkDataSource provideNetworkDataSource(Context context) {
+    public static SermonNetworkDataSource provideSermonNetworkDataSource(Context context) {
         provideRepository(context.getApplicationContext());
         AppExecutors executors = AppExecutors.getInstance();
         return SermonNetworkDataSource.getInstance(context.getApplicationContext(), executors);
+    }
+
+    public static SermonReplyNetworkDataSource provideSermonReplyNetworkDataSource(Context context) {
+        provideRepository(context.getApplicationContext());
+        AppExecutors executors = AppExecutors.getInstance();
+        return SermonReplyNetworkDataSource.getInstance(context.getApplicationContext(), executors);
     }
 
     public static ChurchRepository provideRepository(Context context) {
@@ -41,12 +50,25 @@ public class InjectorUtils {
         AppExecutors executors = AppExecutors.getInstance();
         SermonNetworkDataSource networkDataSource =
                 SermonNetworkDataSource.getInstance(context.getApplicationContext(), executors);
-        return ChurchRepository.getInstance(database.sermonDao(), networkDataSource, executors);
+        SermonReplyNetworkDataSource replyNetworkDataSource =
+                SermonReplyNetworkDataSource.getInstance(context.getApplicationContext(), executors);
+        return ChurchRepository.getInstance(database.sermonDao(),
+                networkDataSource, replyNetworkDataSource, executors);
     }
 
-    public static MainViewModelFactory provideMainActivityViewModelFactory(Context context) {
+    public static SermonViewModelFactory provideSermonViewModelFactory(Context context) {
         ChurchRepository repository = provideRepository(context.getApplicationContext());
-        return new MainViewModelFactory(repository);
+        return new SermonViewModelFactory(repository);
+    }
+
+    public static IntroduceViewModelFactory provideIntroduceViewModelFactory(Context context) {
+        ChurchRepository repository = provideRepository(context.getApplicationContext());
+        return new IntroduceViewModelFactory(repository);
+    }
+
+    public static TrainingViewModelFactory provideTrainingViewModelFactory(Context context) {
+        ChurchRepository repository = provideRepository(context.getApplicationContext());
+        return new TrainingViewModelFactory(repository);
     }
 
     public static SermonDetailActivityViewModelFactory

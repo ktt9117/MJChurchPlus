@@ -2,7 +2,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -25,48 +24,76 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <com.pierfrancescosoffritti.androidyoutubeplayer.player.YouTubePlayerView
-            android:id="@+id/detail_video_view"
-            android:layout_width="match_parent"
-            android:layout_height="240dp" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/detail_info"
+        <LinearLayout
+            android:id="@+id/detail_base_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/list_item_padding_vertical"
-            android:paddingLeft="@dimen/list_item_padding_horizontal"
-            android:paddingRight="@dimen/list_item_padding_horizontal"
-            android:paddingTop="@dimen/list_item_padding_vertical"
-            app:layout_constraintTop_toBottomOf="@+id/detail_video_view" >
+            android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/detail_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/sermon_space"
-                android:layout_marginRight="@dimen/sermon_space"
-                android:fontFamily="sans-serif-light"
-                android:textColor="@color/primary_text"
-                android:textSize="@dimen/sermon_title_text_size"
-                tools:text="2018.04.15 요셉강해(14) - 야곱이 자녀들을 축복하다.(3)"/>
-
-            <TextView
-                android:id="@+id/detail_view_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="@color/secondary_text"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/detail_title"
-                tools:text="조회수 : 100만" />
-
-            <TextView
-                android:id="@+id/detail_content"
+            <com.pierfrancescosoffritti.androidyoutubeplayer.player.YouTubePlayerView
+                android:id="@+id/detail_video_view"
+                android:transitionName="thumbnail"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="240dp" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/detail_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/list_item_padding_vertical"
+                android:paddingLeft="@dimen/list_item_padding_horizontal"
+                android:paddingRight="@dimen/list_item_padding_horizontal"
+                android:paddingTop="@dimen/list_item_padding_vertical" >
+
+                <TextView
+                    android:id="@+id/detail_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/sermon_space"
+                    android:transitionName="title"
+                    android:fontFamily="sans-serif-light"
+                    android:textColor="@color/primary_text"
+                    android:textSize="@dimen/sermon_title_text_size" />
+
+                <TextView
+                    android:id="@+id/detail_view_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/secondary_text"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/detail_title" />
+
+                <TextView
+                    android:id="@+id/detail_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/detail_reply_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            app:layout_constraintBottom_toBottomOf="parent" >
+            <EditText
+                android:id="@+id/detail_edit_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:hint="@string/hint_input_reply_here"
+                android:layout_weight="1" />
+            <ImageView
+                android:id="@+id/detail_reply_send_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_send_48dp"
+                android:background="?android:attr/selectableItemBackground" />
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview_sermon_replies"
@@ -74,8 +101,21 @@
             android:layout_height="0dp"
             android:clipToPadding="false"
             android:paddingBottom="8dp"
-            app:layout_constraintTop_toBottomOf="@id/detail_info"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/detail_base_container"
+            app:layout_constraintBottom_toTopOf="@id/detail_reply_container" />
+
+        <TextView
+            android:id="@+id/empty_message_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/leave_reply_message"
+            android:visibility="gone"
+            style="@android:style/TextAppearance.DeviceDefault.Medium"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/detail_base_container"
+            app:layout_constraintBottom_toTopOf="@id/detail_reply_container" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

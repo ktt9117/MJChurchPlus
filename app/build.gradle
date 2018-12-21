@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 28
@@ -6,8 +7,8 @@ android {
         applicationId "org.mukdongjeil.mjchurch"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode 24
+        versionName "4.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -30,7 +31,6 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation files('libs/jericho-html-3.3.jar')
-    //implementation files('libs/YouTubeAndroidPlayerApi.jar')
 
     /** androidx library */
     implementation "androidx.appcompat:appcompat:1.0.2"
@@ -49,11 +49,22 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata:2.0.0-rc01"
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:2.0.0-rc01"
 
-    /** utilities **/
+    /** utilities */
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
-
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:9.0.0'
+
+    /** firebase component */
+    implementation 'com.google.firebase:firebase-core:16.0.6'
+    implementation 'com.google.firebase:firebase-auth:16.1.0'
+    implementation 'com.firebaseui:firebase-ui-auth:4.2.1'
+    implementation 'com.google.firebase:firebase-firestore:17.1.4'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.6'
+
+    /** ui/ux library */
+    implementation 'jp.wasabeef:recyclerview-animators:3.0.0'
+    implementation 'com.github.chrisbanes:PhotoView:2.0.0'
+    implementation 'com.flaviofaria:kenburnsview:1.0.7'
 
     /** test library */
     testImplementation "junit:junit:$junit_version"
@@ -61,3 +72,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
     implementation 'androidx.appcompat:appcompat:1.0.2'
 }
+
+apply plugin: 'com.google.gms.google-services'

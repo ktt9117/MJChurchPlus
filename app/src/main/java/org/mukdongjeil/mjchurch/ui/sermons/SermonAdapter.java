@@ -19,6 +19,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -34,7 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-class SermonAdapter extends RecyclerView.Adapter<SermonAdapter.ViewHolder> {
+public class SermonAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int VIEW_TYPE_SERMON = 0;
 
@@ -43,7 +44,7 @@ class SermonAdapter extends RecyclerView.Adapter<SermonAdapter.ViewHolder> {
     private final SermonAdapterOnItemClickHandler mClickHandler;
     private List<SermonEntity> mSermonList;
 
-    SermonAdapter(@NonNull Context context, SermonAdapterOnItemClickHandler clickHandler) {
+    public SermonAdapter(@NonNull Context context, SermonAdapterOnItemClickHandler clickHandler) {
         mContext = context;
         mClickHandler = clickHandler;
     }
@@ -57,17 +58,18 @@ class SermonAdapter extends RecyclerView.Adapter<SermonAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         SermonEntity currentSermon = mSermonList.get(position);
 
+        ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.titleView.setText(currentSermon.getTitle());
         viewHolder.viewCountView.setText(String.format("조회수 %d회", currentSermon.getViewCount()));
 
+        String thumbnailUrl = CommonUtils.getYoutubeThumbnailUrl(currentSermon.getVideoUrl());
         Glide.with(mContext)
-                .load(CommonUtils.getYoutubeThumbnailUrl(currentSermon.getVideoUrl()))
+                .load(thumbnailUrl)
                 .into(viewHolder.thumbnailView);
     }
-
 
     /**
      * This method simply returns the number of items to display. It is used behind the scenes
@@ -86,10 +88,11 @@ class SermonAdapter extends RecyclerView.Adapter<SermonAdapter.ViewHolder> {
         return VIEW_TYPE_SERMON;
     }
 
-    void swapList(final List<SermonEntity> newList) {
+    public void swapList(final List<SermonEntity> newList) {
         if (mSermonList == null) {
             mSermonList = newList;
-            notifyDataSetChanged();
+            notifyItemRangeInserted(0, newList.size());
+
         } else {
             DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
                 @Override
@@ -125,28 +128,28 @@ class SermonAdapter extends RecyclerView.Adapter<SermonAdapter.ViewHolder> {
      * The interface that receives onItemClick messages.
      */
     public interface SermonAdapterOnItemClickHandler {
-        void onItemClick(int bbsNo);
+        void onItemClick(View v, int bbsNo);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        final Button btnView;
         final ImageView thumbnailView;
         final TextView titleView;
         final TextView viewCountView;
 
         ViewHolder(View view) {
             super(view);
-
+            btnView = view.findViewById(R.id.btn_view_sermon);
             thumbnailView = view.findViewById(R.id.thumbnail);
             titleView = view.findViewById(R.id.title);
-            viewCountView = view.findViewById(R.id.viewCount);
-
+            viewCountView = view.findViewById(R.id.view_count);
             view.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            mClickHandler.onItemClick(mSermonList.get(adapterPosition).getBbsNo());
+            mClickHandler.onItemClick(v, mSermonList.get(adapterPosition).getBbsNo());
         }
     }
 }

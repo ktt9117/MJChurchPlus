@@ -28,4 +28,8 @@ public class SermonDetailActivityViewModel extends ViewModel {
     public LiveData<List<SermonReplyEntity>> getSermonReplyList() {
         return mSermonReplyList;
     }
+
+    public void addReply(int bbsNo, SermonReplyEntity entity) {
+        mRepository.addSermonReply(bbsNo, entity);
+    }
 }
