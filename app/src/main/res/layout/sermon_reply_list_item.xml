@@ -14,7 +14,7 @@
             android:id="@+id/reply_avatar"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:src="@mipmap/ic_launcher_round"
+            android:src="@drawable/ic_sentiment_very_satisfied_48dp"
             android:padding="8dp" />
 
         <LinearLayout
