@@ -1,24 +1,24 @@
-package org.mukdongjeil.mjchurch.ui.sermons;
+package org.mukdongjeil.mjchurch.ui.introduce;
 
 import org.mukdongjeil.mjchurch.data.ChurchRepository;
-import org.mukdongjeil.mjchurch.data.database.entity.SermonEntity;
+import org.mukdongjeil.mjchurch.data.database.entity.IntroduceEntity;
 
 import java.util.List;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-public class SermonListViewModel extends ViewModel {
+public class IntroduceViewModel extends ViewModel {
 
     private final ChurchRepository mRepository;
-    private final LiveData<List<SermonEntity>> mSermonList;
+    private final LiveData<List<IntroduceEntity>> mIntroduceList;
 
-    public SermonListViewModel(ChurchRepository repository) {
+    public IntroduceViewModel(ChurchRepository repository) {
         mRepository = repository;
-        mSermonList = mRepository.getSermonList();
+        mIntroduceList = mRepository.getIntroduceList();
     }
 
-    public LiveData<List<SermonEntity>> getSermonList() {
-        return mSermonList;
+    public LiveData<List<IntroduceEntity>> getIntroduceList() {
+        return mIntroduceList;
     }
 }

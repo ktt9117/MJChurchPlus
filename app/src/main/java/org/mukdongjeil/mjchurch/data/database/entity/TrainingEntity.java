@@ -4,15 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "introduce")
-public class IntroduceEntity {
+@Entity(tableName = "training")
+public class TrainingEntity {
 
     @PrimaryKey
     @NonNull
     private String title;
     private String contentUri;
 
-    public IntroduceEntity(String title, String contentUri) {
+    public TrainingEntity(String title, String contentUri) {
         this.title = title;
         this.contentUri = contentUri;
     }
