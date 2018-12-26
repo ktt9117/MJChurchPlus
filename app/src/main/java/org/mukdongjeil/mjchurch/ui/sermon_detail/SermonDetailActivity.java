@@ -88,12 +88,11 @@ public class SermonDetailActivity extends AppCompatActivity implements
 
         Intent intent = getIntent();
         mBbsNo = intent.getIntExtra(INTENT_KEY_BBS_NO, -1);
-        Log.i(TAG, "received bbsNo : " + mBbsNo);
         if (mBbsNo != -1) {
             injectViewModel(mBbsNo);
 
         } else {
-            Log.e(TAG, "SermonDetailActivity force finished caused by invalid parameter(bbsNo)");
+            Crashlytics.log(Log.WARN, TAG, "SermonDetailActivity force finished caused by invalid parameter(bbsNo)");
             finish();
         }
     }
@@ -126,7 +125,6 @@ public class SermonDetailActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.d(TAG, "onCreateOptionsMenu");
         if (mUser == null) {
             getMenuInflater().inflate(R.menu.login, menu);
             return true;
@@ -153,16 +151,14 @@ public class SermonDetailActivity extends AppCompatActivity implements
             IdpResponse response = IdpResponse.fromResultIntent(data);
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
-                Log.d(TAG, "Login succeed");
                 setupUser();
                 invalidateOptionsMenu();
 
             } else {
-                if (response == null) {
-                    Log.e(TAG, "Login failed : User canceled");
-                } else {
-                    Log.e(TAG, "Login failed : " + response.getError().getMessage());
+                if (response != null) {
                     Crashlytics.log(Log.ERROR, TAG, "Login failed : " + response.getError().getMessage());
+                } else {
+                    Log.i(TAG, "Login failed : User canceled");
                 }
             }
         }
@@ -189,6 +185,9 @@ public class SermonDetailActivity extends AppCompatActivity implements
         mReplyContainerView = findViewById(R.id.detail_reply_container);
         mEditView = findViewById(R.id.detail_edit_view);
         mEmptyMessageView = findViewById(R.id.empty_message_view);
+        mEmptyMessageView.setOnClickListener(view -> hideSoftKeyboard());
+        findViewById(R.id.detail_info).setOnClickListener(view -> hideSoftKeyboard());
+        findViewById(R.id.detail_reply_send_button).setOnClickListener(view -> sendReply());
         mRecyclerView = findViewById(R.id.recyclerview_sermon_replies);
 
         mLayoutManager =
@@ -199,14 +198,6 @@ public class SermonDetailActivity extends AppCompatActivity implements
 
         mSermonDetailAdapter = new SlideInBottomAnimationAdapter(new SermonDetailAdapter(this));
         mRecyclerView.setAdapter(mSermonDetailAdapter);
-
-        findViewById(R.id.detail_info).setOnClickListener((view) -> {
-            hideSoftKeyboard();
-        });
-
-        findViewById(R.id.detail_reply_send_button).setOnClickListener((view)-> {
-            sendReply();
-        });
     }
 
     private void hideVideoView() {
@@ -271,9 +262,7 @@ public class SermonDetailActivity extends AppCompatActivity implements
             if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
             try {
                 mRecyclerView.smoothScrollToPosition(mPosition);
-            } catch (Exception e) {
-                Log.i(TAG, "just ignore it : " + e.getMessage());
-            }
+            } catch (Exception e) { e. printStackTrace(); }
         });
     }
 
@@ -320,7 +309,6 @@ public class SermonDetailActivity extends AppCompatActivity implements
                     @Override
                     public void onStateChange(@NonNull PlayerConstants.PlayerState state) {
                         super.onStateChange(state);
-                        Log.i(TAG, "onStateChange : " + state.name());
                     }
                 });
             }

@@ -95,7 +95,6 @@ public class SermonFragment extends BaseFragment implements SermonAdapter.Sermon
 
     @Override
     public void onItemClick(View v, int bbsNo) {
-        Log.d(TAG, "onItemClick : " + bbsNo);
         Intent intent = new Intent(getActivity(), SermonDetailActivity.class);
         intent.putExtra(SermonDetailActivity.INTENT_KEY_BBS_NO, bbsNo);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

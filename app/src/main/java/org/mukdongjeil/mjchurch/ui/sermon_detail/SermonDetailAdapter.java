@@ -64,9 +64,8 @@ public class SermonDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     void swapList(final List<SermonReplyEntity> newList) {
         if (mList == null) {
             mList = newList;
-            //notifyDataSetChanged();
             notifyItemRangeInserted(0, newList.size());
-            Log.e(TAG, "reply adapter notifyDataSetChanged called");
+
         } else {
             DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
                 @Override
@@ -95,7 +94,6 @@ public class SermonDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             mList.clear();
             mList.addAll(newList);
             result.dispatchUpdatesTo(SermonDetailAdapter.this);
-            Log.e(TAG, "reply adapter dispatchUpdatesTo called");
         }
     }
 

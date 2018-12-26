@@ -38,11 +38,9 @@ public class SermonReplyNetworkDataSource {
     }
 
     public static SermonReplyNetworkDataSource getInstance(Context context, AppExecutors executors) {
-        Log.d(TAG, "Getting the network data source");
         if (sInstance == null) {
             synchronized (LOCK) {
                 sInstance = new SermonReplyNetworkDataSource(context.getApplicationContext(), executors);
-                Log.d(TAG, "Made new network data source");
             }
         }
         return sInstance;
@@ -54,11 +52,9 @@ public class SermonReplyNetworkDataSource {
                 SermonSyncIntentService.INTENT_VALUE_FETCH_TYPE_SERMON_REPLY);
         intentToFetch.putExtra(SermonSyncIntentService.INTENT_KEY_BBS_NO, bbsNo);
         mContext.startService(intentToFetch);
-        Log.d(TAG, "Service created");
     }
 
     void fetch(int bbsNo) {
-        Log.d(TAG, "Fetch sermon reply started");
         mExecutors.networkIO().execute(() -> {
             try {
                 mFirestore.collection(FirestoreDatabase.Collection.SERMON)
@@ -77,11 +73,9 @@ public class SermonReplyNetworkDataSource {
                                         sermonReplyList.add(entity);
                                     }
 
-                                    Log.i(TAG, "sermonReplyList postValue size : " + sermonReplyList.size());
                                     mDownloadedSermonReplyList.postValue(sermonReplyList);
                                 }
                             } else {
-                                Log.e(TAG, "reply get failed with : " + task.getException().getMessage());
                                 Crashlytics.log(Log.ERROR, TAG, "Reply get failed with : " + task.getException().getMessage());
                             }
                         });
@@ -104,7 +98,6 @@ public class SermonReplyNetworkDataSource {
                         fetch(bbsNo);
 
                     }).addOnFailureListener((e)-> {
-                        Log.e(TAG, "add reply failed : " + e.getMessage());
                         Crashlytics.log(Log.ERROR, TAG, "Add reply failed: " + e.getMessage());
                     });
         });

@@ -53,11 +53,9 @@ public class SermonNetworkDataSource {
     }
 
     public static SermonNetworkDataSource getInstance(Context context, AppExecutors executors) {
-        Log.d(TAG, "Getting the network data source");
         if (sInstance == null) {
             synchronized (LOCK) {
                 sInstance = new SermonNetworkDataSource(context.getApplicationContext(), executors);
-                Log.d(TAG, "Made new network data source");
             }
         }
         return sInstance;
@@ -68,11 +66,9 @@ public class SermonNetworkDataSource {
         intentToFetch.putExtra(SermonSyncIntentService.INTENT_KEY_FETCH_TYPE,
                 SermonSyncIntentService.INTENT_VALUE_FETCH_TYPE_SERMON);
         mContext.startService(intentToFetch);
-        Log.d(TAG, "Service created");
     }
 
     void fetch() {
-        Log.d(TAG, "Fetch sermon started");
         // get sermon list
         mExecutors.networkIO().execute(() -> {
             try {
@@ -90,7 +86,6 @@ public class SermonNetworkDataSource {
                         String detailHtml = NetworkUtils.getResponseFromHttpUrl(sermonDetailUrl);
 
                         SermonEntity entity = parser.parse(bbsNo, detailHtml);
-                        Log.d(TAG, "Html Parsing finished");
                         sermonList.add(entity);
                     }
                 }

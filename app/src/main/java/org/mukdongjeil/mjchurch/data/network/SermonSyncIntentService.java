@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.mukdongjeil.mjchurch.util.InjectorUtils;
 
 import androidx.annotation.Nullable;
@@ -24,11 +26,10 @@ public class SermonSyncIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        Log.d(TAG, "Sync IntentService started");
         String fetchType = intent.getStringExtra(INTENT_KEY_FETCH_TYPE);
-        Log.d(TAG, "fetchType : " + fetchType);
+
         if (TextUtils.isEmpty(fetchType)) {
-            Log.e(TAG, "Error caused by fetch type is empty");
+            Crashlytics.log(Log.WARN, TAG, "onHandleIntent do nothing. caused by fetchType is empty");
             return;
         }
 
@@ -40,7 +41,7 @@ public class SermonSyncIntentService extends IntentService {
         } else if (fetchType.equals(INTENT_VALUE_FETCH_TYPE_SERMON_REPLY)) {
             int bbsNo = intent.getIntExtra(INTENT_KEY_BBS_NO, -1);
             if (bbsNo == -1) {
-                Log.e(TAG, "Error caused by bbsNo is empty");
+                Crashlytics.log(Log.WARN, TAG, "could not fetch sermon reply. caused by intent value bbsNo is empty");
                 return;
             }
 
@@ -48,6 +49,5 @@ public class SermonSyncIntentService extends IntentService {
                     InjectorUtils.provideSermonReplyNetworkDataSource(this.getApplicationContext());
             networkDataSource.fetch(bbsNo);
         }
-
     }
 }

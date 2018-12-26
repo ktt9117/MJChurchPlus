@@ -1,7 +1,6 @@
 package org.mukdongjeil.mjchurch.data.network;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
@@ -51,7 +50,6 @@ public class SermonHtmlParser {
         Element temp = element.getFirstElementByClass(ELEMENT_SUBSTANCE_P);
         Element iframe = temp.getFirstElement(HTMLElementName.IFRAME);
         videoUrl = iframe != null ? iframe.getAttributeValue(ATTRIBUTE_SRC) : null;
-        Log.d(TAG, "videoUrl : " + videoUrl);
 
         List<Element> contentElementList = temp.getAllElements(HTMLElementName.DIV);
         StringBuffer contentBuffer = new StringBuffer();
@@ -69,9 +67,7 @@ public class SermonHtmlParser {
     SermonEntity parse(final String bbsNo, final String html) {
         Source source = new Source(html);
         Element contentElement = source.getFirstElementByClass(LIST_CONTENT_CLASS);
-        //Log.d(TAG, "contentElement : " + contentElement);
         if (contentElement == null) {
-            Log.e(TAG, "contentElement is null");
             return null;
         }
 
