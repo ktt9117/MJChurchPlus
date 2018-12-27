@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">묵동제일교회</string>
+    <string name="title_push">메세지 알림</string>
+
+    <string name="default_notification_channel_id">1000</string>
 
     <string name="title_sermon_list">주일 설교</string>
     <string name="title_sermon_detail">설교 영상</string>

@@ -1,13 +1,16 @@
 package org.mukdongjeil.mjchurch.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 
 import org.mukdongjeil.mjchurch.R;
 import org.mukdongjeil.mjchurch.ui.introduce.IntroduceFragment;
@@ -38,6 +41,24 @@ public class MainActivity extends AppCompatActivity {
         setupToolbar();
         setupNavigationDrawer();
         setDefaultFragment();
+        displayNotificationMessageIfNecessary(getIntent());
+    }
+
+    private void displayNotificationMessageIfNecessary(Intent intent) {
+        if (intent == null) {
+            return;
+        }
+
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            String remoteMessage = extras.getString("remoteMessage", null);
+            if (TextUtils.isEmpty(remoteMessage) == false) {
+                new SweetAlertDialog(MainActivity.this)
+                        .setTitleText(getString(R.string.title_push))
+                        .setContentText(remoteMessage)
+                        .show();
+            }
+        }
     }
 
     private void setDefaultFragment() {
