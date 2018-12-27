@@ -43,7 +43,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationChannel channel;
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            channel = new NotificationChannel(defaultChannelId, "name", NotificationManager.IMPORTANCE_HIGH);
+            channel = new NotificationChannel(defaultChannelId, defaultChannelId, NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(channel);
             notificationBuilder = new NotificationCompat.Builder(this, channel.getId());
 
