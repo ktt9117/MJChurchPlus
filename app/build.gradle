@@ -7,8 +7,8 @@ android {
         applicationId "org.mukdongjeil.mjchurch"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 24
-        versionName "4.0"
+        versionCode 25
+        versionName "4.1"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -62,11 +62,13 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:4.2.1'
     implementation 'com.google.firebase:firebase-firestore:17.1.4'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.6'
+    implementation 'com.google.firebase:firebase-messaging:17.3.4'
 
     /** ui/ux library */
     implementation 'jp.wasabeef:recyclerview-animators:3.0.0'
     implementation 'com.github.chrisbanes:PhotoView:2.0.0'
     implementation 'com.flaviofaria:kenburnsview:1.0.7'
+    implementation 'com.github.thomper:sweet-alert-dialog:v1.4.0'
 
     /** test library */
     testImplementation "junit:junit:$junit_version"
