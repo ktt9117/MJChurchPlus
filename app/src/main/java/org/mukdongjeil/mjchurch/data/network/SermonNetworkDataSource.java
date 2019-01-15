@@ -2,6 +2,7 @@ package org.mukdongjeil.mjchurch.data.network;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -65,7 +66,12 @@ public class SermonNetworkDataSource {
         Intent intentToFetch = new Intent(mContext, SermonSyncIntentService.class);
         intentToFetch.putExtra(SermonSyncIntentService.INTENT_KEY_FETCH_TYPE,
                 SermonSyncIntentService.INTENT_VALUE_FETCH_TYPE_SERMON);
-        mContext.startService(intentToFetch);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mContext.startForegroundService(intentToFetch);
+        } else {
+            mContext.startService(intentToFetch);
+        }
+
     }
 
     void fetch() {
