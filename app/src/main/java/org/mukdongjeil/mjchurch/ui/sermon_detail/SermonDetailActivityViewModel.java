@@ -2,7 +2,7 @@ package org.mukdongjeil.mjchurch.ui.sermon_detail;
 
 import org.mukdongjeil.mjchurch.data.ChurchRepository;
 import org.mukdongjeil.mjchurch.data.database.entity.SermonEntity;
-import org.mukdongjeil.mjchurch.data.database.entity.SermonReplyEntity;
+import org.mukdongjeil.mjchurch.data.database.entity.ReplyEntity;
 
 import java.util.List;
 
@@ -13,9 +13,9 @@ public class SermonDetailActivityViewModel extends ViewModel {
 
     private final ChurchRepository mRepository;
     private final LiveData<SermonEntity> mSermonEntity;
-    private final LiveData<List<SermonReplyEntity>> mSermonReplyList;
+    private final LiveData<List<ReplyEntity>> mSermonReplyList;
 
-    public SermonDetailActivityViewModel(ChurchRepository repository, int bbsNo) {
+    public SermonDetailActivityViewModel(ChurchRepository repository, String bbsNo) {
         mRepository = repository;
         mSermonEntity = mRepository.getSermonEntity(bbsNo);
         mSermonReplyList = mRepository.getSermonReplyList(bbsNo);
@@ -25,11 +25,11 @@ public class SermonDetailActivityViewModel extends ViewModel {
         return mSermonEntity;
     }
 
-    public LiveData<List<SermonReplyEntity>> getSermonReplyList() {
+    public LiveData<List<ReplyEntity>> getSermonReplyList() {
         return mSermonReplyList;
     }
 
-    public void addReply(int bbsNo, SermonReplyEntity entity) {
+    public void addReply(String bbsNo, ReplyEntity entity) {
         mRepository.addSermonReply(bbsNo, entity);
     }
 }

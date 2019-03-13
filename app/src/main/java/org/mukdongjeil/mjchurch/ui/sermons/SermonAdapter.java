@@ -19,7 +19,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -132,14 +131,12 @@ public class SermonAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        final Button btnView;
         final ImageView thumbnailView;
         final TextView titleView;
         final TextView viewCountView;
 
         ViewHolder(View view) {
             super(view);
-            btnView = view.findViewById(R.id.btn_view_sermon);
             thumbnailView = view.findViewById(R.id.thumbnail);
             titleView = view.findViewById(R.id.title);
             viewCountView = view.findViewById(R.id.view_count);

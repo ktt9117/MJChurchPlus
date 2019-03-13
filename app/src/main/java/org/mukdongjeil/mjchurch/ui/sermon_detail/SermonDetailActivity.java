@@ -16,7 +16,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,9 +28,10 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.player.listeners.YouTubeP
 import com.pierfrancescosoffritti.androidyoutubeplayer.player.listeners.YouTubePlayerInitListener;
 
 import org.mukdongjeil.mjchurch.R;
+import org.mukdongjeil.mjchurch.data.database.entity.ReplyEntity;
 import org.mukdongjeil.mjchurch.data.database.entity.SermonEntity;
-import org.mukdongjeil.mjchurch.data.database.entity.SermonReplyEntity;
 import org.mukdongjeil.mjchurch.data.database.entity.User;
+import org.mukdongjeil.mjchurch.ui.reply.ReplyAdapter;
 import org.mukdongjeil.mjchurch.util.InjectorUtils;
 
 import java.util.Arrays;
@@ -58,9 +58,8 @@ public class SermonDetailActivity extends AppCompatActivity implements
 
     private SermonDetailActivityViewModel mViewModel;
 
-    private LinearLayoutManager mLayoutManager;
     private RecyclerView mRecyclerView;
-    private SlideInBottomAnimationAdapter mSermonDetailAdapter;
+    private SlideInBottomAnimationAdapter mReplyAdapter;
     private int mPosition = RecyclerView.NO_POSITION;
 
     private TextView mTitleView, mViewCountView, mEmptyMessageView;
@@ -69,7 +68,7 @@ public class SermonDetailActivity extends AppCompatActivity implements
     private ViewGroup mBaseContainerView;
     private ViewGroup mReplyContainerView;
     private EditText mEditView;
-    private int mBbsNo;
+    private String mBbsNo;
     private FirebaseUser mUser;
 
     @Override
@@ -87,12 +86,12 @@ public class SermonDetailActivity extends AppCompatActivity implements
         setupUser();
 
         Intent intent = getIntent();
-        mBbsNo = intent.getIntExtra(INTENT_KEY_BBS_NO, -1);
-        if (mBbsNo != -1) {
+        mBbsNo = intent.getStringExtra(INTENT_KEY_BBS_NO);
+        if (!TextUtils.isEmpty(mBbsNo)) {
             injectViewModel(mBbsNo);
 
         } else {
-            Crashlytics.log(Log.WARN, TAG, "SermonDetailActivity force finished caused by invalid parameter(bbsNo)");
+            Log.e(TAG, "SermonDetailActivity force finished caused by invalid parameter(bbsNo)");
             finish();
         }
     }
@@ -108,7 +107,7 @@ public class SermonDetailActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        displayEmptyView(mSermonDetailAdapter.getItemCount() > 0 ? false : true);
+        displayEmptyView(mReplyAdapter.getItemCount() > 0 ? false : true);
     }
 
     @Override
@@ -156,7 +155,7 @@ public class SermonDetailActivity extends AppCompatActivity implements
 
             } else {
                 if (response != null) {
-                    Crashlytics.log(Log.ERROR, TAG, "Login failed : " + response.getError().getMessage());
+                    Log.e(TAG, "Login failed : " + response.getError().getMessage());
                 } else {
                     Log.i(TAG, "Login failed : User canceled");
                 }
@@ -178,10 +177,10 @@ public class SermonDetailActivity extends AppCompatActivity implements
     }
 
     private void setupView() {
-        mBaseContainerView = findViewById(R.id.detail_base_container);
         mTitleView = findViewById(R.id.detail_title);
         mViewCountView = findViewById(R.id.detail_view_count);
         mPlayerView = findViewById(R.id.detail_video_view);
+        mBaseContainerView = findViewById(R.id.detail_base_container);
         mReplyContainerView = findViewById(R.id.detail_reply_container);
         mEditView = findViewById(R.id.detail_edit_view);
         mEmptyMessageView = findViewById(R.id.empty_message_view);
@@ -190,14 +189,14 @@ public class SermonDetailActivity extends AppCompatActivity implements
         findViewById(R.id.detail_reply_send_button).setOnClickListener(view -> sendReply());
         mRecyclerView = findViewById(R.id.recyclerview_sermon_replies);
 
-        mLayoutManager =
+        LinearLayoutManager layoutManager =
                 new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
 
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mSermonDetailAdapter = new SlideInBottomAnimationAdapter(new SermonDetailAdapter(this));
-        mRecyclerView.setAdapter(mSermonDetailAdapter);
+        mReplyAdapter = new SlideInBottomAnimationAdapter(new ReplyAdapter(this, null));
+        mRecyclerView.setAdapter(mReplyAdapter);
     }
 
     private void hideVideoView() {
@@ -229,12 +228,12 @@ public class SermonDetailActivity extends AppCompatActivity implements
             return;
         }
 
-        SermonReplyEntity entity = new SermonReplyEntity(
+        ReplyEntity entity = new ReplyEntity(
                 replyContent,
                 new User(mUser.getUid(), mUser.getDisplayName(), mUser.getPhotoUrl().toString()),
                 System.currentTimeMillis());
         mViewModel.addReply(mBbsNo, entity);
-        mPosition = mSermonDetailAdapter.getItemCount();
+        mPosition = mReplyAdapter.getItemCount();
 
         hideSoftKeyboard();
         mEditView.setText(null);
@@ -246,7 +245,7 @@ public class SermonDetailActivity extends AppCompatActivity implements
         return super.onSupportNavigateUp();
     }
 
-    private void injectViewModel(int bbsNo) {
+    private void injectViewModel(String bbsNo) {
         SermonDetailActivityViewModelFactory factory =
                 InjectorUtils.provideSermonDetailActivityViewModelFactory(this.getApplicationContext(), bbsNo);
         mViewModel = ViewModelProviders.of(this, factory).get(SermonDetailActivityViewModel.class);
@@ -256,8 +255,8 @@ public class SermonDetailActivity extends AppCompatActivity implements
         });
 
         mViewModel.getSermonReplyList().observe(this, replyEntities -> {
-            ((SermonDetailAdapter) mSermonDetailAdapter.getWrappedAdapter()).swapList(replyEntities);
-            displayEmptyView(mSermonDetailAdapter.getItemCount() > 0 ? false : true);
+            ((ReplyAdapter) mReplyAdapter.getWrappedAdapter()).swapList(replyEntities);
+            displayEmptyView(mReplyAdapter.getItemCount() > 0 ? false : true);
 
             if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
             try {

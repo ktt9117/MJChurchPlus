@@ -13,6 +13,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 
 import org.mukdongjeil.mjchurch.R;
+import org.mukdongjeil.mjchurch.ui.boards.BoardFragment;
 import org.mukdongjeil.mjchurch.ui.introduce.IntroduceFragment;
 import org.mukdongjeil.mjchurch.ui.sermons.SermonFragment;
 import org.mukdongjeil.mjchurch.ui.training.TrainingFragment;
@@ -62,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setDefaultFragment() {
-        Fragment fragment = SermonFragment.getInstance();
+//        Fragment fragment = SermonFragment.getInstance();
+        Fragment fragment = BoardFragment.getInstance();
         switchContent(fragment);
     }
 
@@ -138,6 +140,9 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.training_menu_item:
                     switchContent(TrainingFragment.getInstance());
                     break;
+
+                case R.id.board_menu_item:
+                    switchContent(BoardFragment.getInstance());
 
                 default:
                     break;

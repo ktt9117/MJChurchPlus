@@ -1,6 +1,7 @@
 package org.mukdongjeil.mjchurch.data.database.entity;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "sermon")
@@ -15,6 +16,9 @@ public class SermonEntity {
     private int viewCount;
     private String content;
     private String videoUrl;
+
+    @Ignore
+    public SermonEntity(){}
 
     // Constructor used by Room to create SermonEntity
     public SermonEntity(int bbsNo, int sermonType, String title, String writer, String date,

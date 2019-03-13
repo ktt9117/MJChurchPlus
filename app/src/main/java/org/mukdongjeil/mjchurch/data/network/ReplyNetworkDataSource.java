@@ -4,14 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import org.mukdongjeil.mjchurch.AppExecutors;
 import org.mukdongjeil.mjchurch.data.database.FirestoreDatabase;
-import org.mukdongjeil.mjchurch.data.database.entity.SermonReplyEntity;
+import org.mukdongjeil.mjchurch.data.database.entity.ReplyEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,46 +18,47 @@ import java.util.List;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-public class SermonReplyNetworkDataSource {
-    private static final String TAG = SermonReplyNetworkDataSource.class.getSimpleName();
+public class ReplyNetworkDataSource {
+    private static final String TAG = ReplyNetworkDataSource.class.getSimpleName();
 
     private static final Object LOCK = new Object();
-    private static SermonReplyNetworkDataSource sInstance;
+    private static ReplyNetworkDataSource sInstance;
     private final Context mContext;
     private FirebaseFirestore mFirestore;
     private final AppExecutors mExecutors;
 
-    private final MutableLiveData<List<SermonReplyEntity>> mDownloadedSermonReplyList;
+    private final MutableLiveData<List<ReplyEntity>> mDownloadedReplyList;
 
-    private SermonReplyNetworkDataSource(Context context, AppExecutors executors) {
+    private ReplyNetworkDataSource(Context context, AppExecutors executors) {
         mContext = context;
         mExecutors = executors;
-        mDownloadedSermonReplyList = new MutableLiveData<>();
+        mDownloadedReplyList = new MutableLiveData<>();
         mFirestore = FirebaseFirestore.getInstance();
     }
 
-    public static SermonReplyNetworkDataSource getInstance(Context context, AppExecutors executors) {
+    public static ReplyNetworkDataSource getInstance(Context context, AppExecutors executors) {
         if (sInstance == null) {
             synchronized (LOCK) {
-                sInstance = new SermonReplyNetworkDataSource(context.getApplicationContext(), executors);
+                sInstance = new ReplyNetworkDataSource(context.getApplicationContext(), executors);
             }
         }
         return sInstance;
     }
 
-    public void startFetchService(int bbsNo) {
-        Intent intentToFetch = new Intent(mContext, SermonSyncIntentService.class);
-        intentToFetch.putExtra(SermonSyncIntentService.INTENT_KEY_FETCH_TYPE,
-                SermonSyncIntentService.INTENT_VALUE_FETCH_TYPE_SERMON_REPLY);
-        intentToFetch.putExtra(SermonSyncIntentService.INTENT_KEY_BBS_NO, bbsNo);
+    public void startFetchService(String collectionType, String documentNo) {
+        Intent intentToFetch = new Intent(mContext, DataSyncIntentService.class);
+        intentToFetch.putExtra(DataSyncIntentService.INTENT_KEY_FETCH_TYPE,
+                DataSyncIntentService.INTENT_VALUE_FETCH_TYPE_REPLY);
+        intentToFetch.putExtra(DataSyncIntentService.INTENT_KEY_COLLECTION_TYPE, collectionType);
+        intentToFetch.putExtra(DataSyncIntentService.INTENT_KEY_DOCUMENT_NO, documentNo);
         mContext.startService(intentToFetch);
     }
 
-    void fetch(int bbsNo) {
+    void fetch(String collectionType, String documentNo) {
         mExecutors.networkIO().execute(() -> {
             try {
-                mFirestore.collection(FirestoreDatabase.Collection.SERMON)
-                        .document(Integer.toString(bbsNo))
+                mFirestore.collection(collectionType)
+                        .document(documentNo)
                         .collection(FirestoreDatabase.Collection.REPLIES)
                         .orderBy("createdAt", Query.Direction.ASCENDING)
                         .get()
@@ -66,45 +66,45 @@ public class SermonReplyNetworkDataSource {
                             if (task.isSuccessful()) {
                                 List<DocumentSnapshot> docs = task.getResult().getDocuments();
                                 if (docs.isEmpty() == false) {
-                                    List<SermonReplyEntity> sermonReplyList = new ArrayList<>();
+                                    List<ReplyEntity> replyList = new ArrayList<>();
                                     for (DocumentSnapshot doc : docs) {
-                                        SermonReplyEntity entity = doc.toObject(SermonReplyEntity.class);
+                                        ReplyEntity entity = doc.toObject(ReplyEntity.class);
                                         entity.setDocumentId(doc.getId());
-                                        sermonReplyList.add(entity);
+                                        replyList.add(entity);
                                     }
 
-                                    mDownloadedSermonReplyList.postValue(sermonReplyList);
+                                    mDownloadedReplyList.postValue(replyList);
                                 }
                             } else {
-                                Crashlytics.log(Log.ERROR, TAG, "Reply get failed with : " + task.getException().getMessage());
+                                Log.e(TAG, "Reply get failed with : " + task.getException().getMessage());
                             }
                         });
             } catch (Exception e) {
                 // Server probably invalid
                 e.printStackTrace();
-                Crashlytics.log(Log.ERROR, TAG, "error occurred while get the sermon reply list : " + e.getMessage());
+                Log.e(TAG, "error occurred while get the sermon reply list : " + e.getMessage());
             }
         });
     }
 
-    public void addReply(int bbsNo, SermonReplyEntity entity) {
+    public void addReply(String collectionType, String documentId, ReplyEntity entity) {
         mExecutors.networkIO().execute(() -> {
-            mFirestore.collection(FirestoreDatabase.Collection.SERMON)
-                    .document(Integer.toString(bbsNo))
+            mFirestore.collection(collectionType)
+                    .document(documentId)
                     .collection(FirestoreDatabase.Collection.REPLIES)
                     .add(entity)
                     .addOnSuccessListener((documentReference)-> {
                         Log.i(TAG, "add reply succeed : " + documentReference.getId());
-                        fetch(bbsNo);
+                        fetch(collectionType, documentId);
 
                     }).addOnFailureListener((e)-> {
-                        Crashlytics.log(Log.ERROR, TAG, "Add reply failed: " + e.getMessage());
+                        Log.e(TAG, "Add reply failed: " + e.getMessage());
                     });
         });
     }
 
-    public LiveData<List<SermonReplyEntity>> getSermonReplyEntity() {
-        return mDownloadedSermonReplyList;
+    public LiveData<List<ReplyEntity>> getReplyEntity() {
+        return mDownloadedReplyList;
     }
 
     public Context getContext() {

@@ -5,7 +5,7 @@
 
     <style name="AppTheme.OverlapSystemBar" parent="Base.AppTheme" />
 
-    <style name="Base.AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="Base.AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -15,12 +15,5 @@
     </style>
 
     <style name="Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="PrimaryFlatButton" parent="Theme.AppCompat.Light" >
-        <item name="android:buttonStyle">
-            @style/Widget.AppCompat.Button.Borderless.Colored
-        </item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
 
 </resources>

@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
+        android:name=".MJChurchApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -40,8 +41,21 @@
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" >
         </activity>
 
+        <activity
+            android:name=".ui.board_add.BoardAddActivity"
+            android:windowSoftInputMode="stateVisible"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" >
+        </activity>
+
+        <activity
+            android:name=".ui.board_detail.BoardDetailActivity"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" >
+        </activity>
+
+
         <service
-            android:name=".data.network.SermonSyncIntentService"
+            android:name=".data.network.DataSyncIntentService"
             android:exported="false" />
 
         <service

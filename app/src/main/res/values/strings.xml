@@ -8,11 +8,22 @@
     <string name="title_sermon_detail">설교 영상</string>
     <string name="title_welcome">환영합니다</string>
     <string name="title_training">양육과 훈련</string>
+    <string name="title_board">감사나눔(모바일)</string>
+    <string name="title_board_long">감사나눔 게시판</string>
+    <string name="title_write_board">게시글 쓰기</string>
 
     <string name="hint_input_reply_here">댓글을 남겨주세요.</string>
+    <string name="hint_input_content_here">내용을 작성해주세요.</string>
     <string name="application_quit_message">앱을 종료하려면 뒤로가기를 한번 더 누르세요</string>
 
     <string name="button_title_view_sermon">설교 보기</string>
     <string name="get_data_failed_message">인터넷에 연결되지 않았거나 알 수 없는 이유로 데이터를 가져오지 못했습니다. 나중에 다시 실행해 주세요.</string>
     <string name="leave_reply_message">처음으로 댓글을 남겨보세요!</string>
+    <string name="reply_sent_message">댓글을 남겼습니다.</string>
+    <string name="leave_thanks_message">감사한 것을 나눠보세요.</string>
+    <string name="like">좋아요</string>
+    <string name="like_count">좋아요 %d</string>
+
+    <string name="cancel">취소</string>
+    <string name="add">등록</string>
 </resources>

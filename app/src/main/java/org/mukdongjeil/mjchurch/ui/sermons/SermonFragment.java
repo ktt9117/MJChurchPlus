@@ -11,8 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
-
 import org.mukdongjeil.mjchurch.R;
 import org.mukdongjeil.mjchurch.ui.BaseFragment;
 import org.mukdongjeil.mjchurch.ui.sermon_detail.SermonDetailActivity;
@@ -86,7 +84,7 @@ public class SermonFragment extends BaseFragment implements SermonAdapter.Sermon
                 showLoadingDialog();
                 new Handler().postDelayed(()-> {
                     Toast.makeText(getActivity(), R.string.get_data_failed_message, Toast.LENGTH_LONG).show();
-                    Crashlytics.log(Log.WARN, TAG, "cannot get sermon entities");
+                    Log.e(TAG, "cannot get sermon entities");
                     closeLoadingDialog();
                 }, 1000 * 10);
             }
@@ -96,7 +94,7 @@ public class SermonFragment extends BaseFragment implements SermonAdapter.Sermon
     @Override
     public void onItemClick(View v, int bbsNo) {
         Intent intent = new Intent(getActivity(), SermonDetailActivity.class);
-        intent.putExtra(SermonDetailActivity.INTENT_KEY_BBS_NO, bbsNo);
+        intent.putExtra(SermonDetailActivity.INTENT_KEY_BBS_NO, Integer.toString(bbsNo));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             startActivity(intent, createTransitionOption(v).toBundle());
         } else {

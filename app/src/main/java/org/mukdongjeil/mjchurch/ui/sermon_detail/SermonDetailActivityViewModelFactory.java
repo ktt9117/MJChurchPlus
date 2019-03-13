@@ -8,9 +8,9 @@ import androidx.lifecycle.ViewModelProvider;
 public class SermonDetailActivityViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
     private final ChurchRepository mRepository;
-    private int bbsNo;
+    private String bbsNo;
 
-    public SermonDetailActivityViewModelFactory(ChurchRepository repository, int bbsNo) {
+    public SermonDetailActivityViewModelFactory(ChurchRepository repository, String bbsNo) {
         this.mRepository = repository;
         this.bbsNo = bbsNo;
     }
