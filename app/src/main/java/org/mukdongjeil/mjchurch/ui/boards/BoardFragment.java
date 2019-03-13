@@ -5,14 +5,11 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.mukdongjeil.mjchurch.R;
@@ -37,8 +34,6 @@ public class BoardFragment extends BaseFragment implements OnItemClickListener {
     private TextInputEditText mBtnWrite;
     private RecyclerView mRecyclerView;
     private SlideInBottomAnimationAdapter mAdapter;
-    private int mPosition = RecyclerView.NO_POSITION;
-    private int y;
 
     private BoardListViewModel mViewModel;
 
@@ -75,27 +70,6 @@ public class BoardFragment extends BaseFragment implements OnItemClickListener {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_ITEM_SPACE));
         mRecyclerView.setHasFixedSize(true);
-//        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//                y = dy;
-//            }
-//
-//            @Override
-//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-//                super.onScrollStateChanged(recyclerView, newState);
-//                if (mRecyclerView.SCROLL_STATE_IDLE == newState) {
-//                    if (y <= 0) {
-//                        mBtnWrite.setVisibility(View.VISIBLE);
-//                    } else {
-//                        y = 0;
-//                        mBtnWrite.setVisibility(View.GONE);
-//                    }
-//                }
-//            }
-//        });
-
         mAdapter = new SlideInBottomAnimationAdapter(new BoardAdapter(getActivity(), this));
         mRecyclerView.setAdapter(mAdapter);
 
@@ -111,35 +85,27 @@ public class BoardFragment extends BaseFragment implements OnItemClickListener {
         BoardViewModelFactory factory = InjectorUtils.provideBoardViewModelFactory(getActivity());
         mViewModel = ViewModelProviders.of(this, factory).get(BoardListViewModel.class);
         mViewModel.getBoardList().observe(this, boardEntities -> {
-            ((BoardAdapter) mAdapter.getWrappedAdapter()).swapList(boardEntities);
-            if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
-            mRecyclerView.smoothScrollToPosition(mPosition);
-
+            closeLoadingDialog();
             if (boardEntities != null && boardEntities.size() != 0) {
-                closeLoadingDialog();
-            } else {
+                ((BoardAdapter) mAdapter.getWrappedAdapter()).swapList(boardEntities);
+                mRecyclerView.setVisibility(View.VISIBLE);
+                mRecyclerView.smoothScrollToPosition(0);
 
-                showLoadingDialog();
-                new Handler().postDelayed(()-> {
-                    Toast.makeText(getActivity(), R.string.get_data_failed_message, Toast.LENGTH_LONG).show();
-                    Crashlytics.log(Log.WARN, TAG, "cannot get sermon entities");
-                    closeLoadingDialog();
-                }, 1000 * 10);
+            } else {
+                Toast.makeText(getActivity(), R.string.get_data_failed_message, Toast.LENGTH_LONG).show();
             }
         });
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private ActivityOptionsCompat createTransitionOption(View v) {
-        View titleView = v.findViewById(R.id.title);
         View avatarView = v.findViewById(R.id.avatar);
         View writerView = v.findViewById(R.id.writer);
         View timestampView = v.findViewById(R.id.timestamp);
-        Pair<View, String> p1 = Pair.create(titleView, titleView.getTransitionName());
-        Pair<View, String> p2 = Pair.create(avatarView, avatarView.getTransitionName());
-        Pair<View, String> p3 = Pair.create(writerView, writerView.getTransitionName());
-        Pair<View, String> p4 = Pair.create(timestampView, timestampView.getTransitionName());
-        return ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), p1, p2, p3, p4);
+        Pair<View, String> p1 = Pair.create(avatarView, avatarView.getTransitionName());
+        Pair<View, String> p2 = Pair.create(writerView, writerView.getTransitionName());
+        Pair<View, String> p3 = Pair.create(timestampView, timestampView.getTransitionName());
+        return ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), p1, p2, p3);
     }
 
     private static final int VERTICAL_ITEM_SPACE = 24;

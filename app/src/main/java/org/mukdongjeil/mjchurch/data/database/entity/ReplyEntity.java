@@ -2,16 +2,16 @@ package org.mukdongjeil.mjchurch.data.database.entity;
 
 import com.google.firebase.firestore.Exclude;
 
-public class SermonReplyEntity {
+public class ReplyEntity {
 
     private String documentId;
     private long createdAt;
     private String content;
     private User writer;
 
-    public SermonReplyEntity() {}
+    public ReplyEntity() {}
 
-    public SermonReplyEntity(String content, User writer, long createdAt) {
+    public ReplyEntity(String content, User writer, long createdAt) {
         this.content = content;
         this.writer = writer;
         this.createdAt = createdAt;

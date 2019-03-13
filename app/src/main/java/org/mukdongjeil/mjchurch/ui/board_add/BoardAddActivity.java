@@ -11,7 +11,6 @@ import android.view.Gravity;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.material.button.MaterialButton;
@@ -92,10 +91,11 @@ public class BoardAddActivity extends AppCompatActivity {
                 mBtnAdd.setEnabled(true);
                 if (isSucceed) {
                     showToast("게시글이 작성되었습니다.");
-                    finish();
                 } else {
                     showToast("게시글 작성이 실패했습니다. " + message == null ? "" : message);
                 }
+
+                finish();
             }));
         });
 
@@ -115,7 +115,7 @@ public class BoardAddActivity extends AppCompatActivity {
 
             } else {
                 if (response != null) {
-                    Crashlytics.log(Log.ERROR, TAG, "Login failed : " + response.getError().getMessage());
+                    Log.e(TAG, "Login failed : " + response.getError().getMessage());
                 } else {
                     Log.i(TAG, "Login failed : User canceled");
                 }

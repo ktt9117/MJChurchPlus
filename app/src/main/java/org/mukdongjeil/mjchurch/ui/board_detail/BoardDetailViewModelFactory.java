@@ -8,13 +8,15 @@ import androidx.lifecycle.ViewModelProvider;
 public class BoardDetailViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
     private final ChurchRepository mRepository;
+    private String boardId;
 
-    public BoardDetailViewModelFactory(ChurchRepository repository) {
+    public BoardDetailViewModelFactory(ChurchRepository repository, String boardId) {
         this.mRepository = repository;
+        this.boardId = boardId;
     }
 
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
-        return (T) new BoardDetailViewModel(mRepository);
+        return (T) new BoardDetailViewModel(mRepository, boardId);
     }
 }

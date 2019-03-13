@@ -11,8 +11,6 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
-
 import org.mukdongjeil.mjchurch.R;
 import org.mukdongjeil.mjchurch.util.InjectorUtils;
 
@@ -20,8 +18,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
-public class SermonSyncIntentService extends IntentService {
-    private static final String TAG = SermonSyncIntentService.class.getSimpleName();
+public class DataSyncIntentService extends IntentService {
+    private static final String TAG = DataSyncIntentService.class.getSimpleName();
 
     private static final String NOTI_CHANNEL_ID = "MJChurchPlus";
     private static final String NOTI_CHANNEL_NAME = "SyncService";
@@ -34,7 +32,7 @@ public class SermonSyncIntentService extends IntentService {
 
     public static final String INTENT_KEY_DOCUMENT_NO = "documentNo";
 
-    public SermonSyncIntentService() {
+    public DataSyncIntentService() {
         super(TAG);
     }
 
@@ -63,7 +61,7 @@ public class SermonSyncIntentService extends IntentService {
         String collectionType = intent.getStringExtra(INTENT_KEY_COLLECTION_TYPE);
 
         if (TextUtils.isEmpty(fetchType)) {
-            Crashlytics.log(Log.WARN, TAG, "onHandleIntent do nothing. caused by fetchType is empty");
+            Log.e(TAG, "onHandleIntent do nothing. caused by fetchType is empty");
             return;
         }
 
@@ -75,7 +73,7 @@ public class SermonSyncIntentService extends IntentService {
         } else if (fetchType.equals(INTENT_VALUE_FETCH_TYPE_REPLY)) {
             String documentNo = intent.getStringExtra(INTENT_KEY_DOCUMENT_NO);
             if (TextUtils.isEmpty(documentNo)) {
-                Crashlytics.log(Log.WARN, TAG, "could not fetch sermon reply. caused by intent value bbsNo is empty");
+                Log.e(TAG, "could not fetch sermon reply. caused by intent value bbsNo is empty");
                 return;
             }
 

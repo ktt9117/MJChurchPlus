@@ -46,6 +46,7 @@ public final class NetworkUtils {
 
     private static final String WELCOME_URL = BASE_URL + "/m/html/index.hpc?menuId=1749&topMenuId=1&menuType=27&newmenuAt=false&tPage=1";
     private static final String TRAINING_URL = BASE_URL + "/m/html/index.hpc?menuId=10005607&topMenuId=3&menuType=27&newmenuAt=true&tPage=1";
+    private static final String BOARD_THANKS_SHARE_URL = BASE_URL + "/m/board/index.hpc?menuId=10004076&topMenuId=6&menuType=1&newmenuAt=true&page=1";
 
     private static final int SUNDAY_MORNING_WORSHIP_ID = 10004043;
 
@@ -69,6 +70,17 @@ public final class NetworkUtils {
         try {
             URL url = new URL(TRAINING_URL);
             Log.v(TAG, "getTrainingUrl : " + url);
+            return url;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static URL getBoardUrl() {
+        try {
+            URL url = new URL(BOARD_THANKS_SHARE_URL);
+            Log.v(TAG, "getBoardUrl : " + url);
             return url;
         } catch (MalformedURLException e) {
             e.printStackTrace();

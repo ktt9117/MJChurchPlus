@@ -9,7 +9,6 @@ public class BoardEntity {
     private int viewCount;
     private String content;
 
-
     public BoardEntity() {}
 
     public BoardEntity(String id, User writer, long timeMillis, int likeCount, int viewCount, String content) {

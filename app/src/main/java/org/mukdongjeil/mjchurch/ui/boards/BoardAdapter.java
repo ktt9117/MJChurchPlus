@@ -58,13 +58,12 @@ public class BoardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         BoardEntity entity = mList.get(position);
-
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.titleView.setText(entity.getContent());
         viewHolder.titleView.setTag(entity.getId());
         viewHolder.writerView.setText(entity.getWriter().getDisplayName());
         viewHolder.timestampView.setText(DateUtil.convertReadableDateTime(entity.getCreatedAt()));
-        viewHolder.likeCountView.setText(String.format("좋아요 %d", entity.getLikeCount()));
+        viewHolder.likeCountView.setText((mContext.getResources().getString(R.string.like_count, entity.getLikeCount())));
     }
 
     @Override
@@ -111,7 +110,7 @@ public class BoardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ViewHolder extends RecyclerView.ViewHolder {
         final TextView titleView;
         final TextView writerView;
         final TextView likeCountView;
@@ -125,12 +124,7 @@ public class BoardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             likeCountView = view.findViewById(R.id.like_count);
             timestampView = view.findViewById(R.id.timestamp);
             avatarView = view.findViewById(R.id.avatar);
-            view.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            mOnItemClickListener.onItemClick(v);
+            view.setOnClickListener(v -> mOnItemClickListener.onItemClick(v));
         }
     }
 }
