@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mukdongjeil.mjchurch.ui.sermons;
+package org.mukdongjeil.mjchurch.ui.boards;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -22,11 +22,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import org.mukdongjeil.mjchurch.R;
-import org.mukdongjeil.mjchurch.data.database.entity.SermonEntity;
-import org.mukdongjeil.mjchurch.util.CommonUtils;
+import org.mukdongjeil.mjchurch.data.database.entity.BoardEntity;
+import org.mukdongjeil.mjchurch.util.DateUtil;
+import org.mukdongjeil.mjchurch.util.OnItemClickListener;
 
 import java.util.List;
 
@@ -34,69 +33,61 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SermonAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class BoardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int VIEW_TYPE_SERMON = 0;
+    private static final int VIEW_TYPE_BOARD = 0;
 
     private final Context mContext;
 
-    private final SermonAdapterOnItemClickHandler mClickHandler;
-    private List<SermonEntity> mSermonList;
+    private final OnItemClickListener mOnItemClickListener;
+    private List<BoardEntity> mList;
 
-    public SermonAdapter(@NonNull Context context, SermonAdapterOnItemClickHandler clickHandler) {
+    public BoardAdapter(@NonNull Context context, OnItemClickListener clickHandler) {
         mContext = context;
-        mClickHandler = clickHandler;
+        mOnItemClickListener = clickHandler;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View view = LayoutInflater.from(mContext)
-                .inflate(R.layout.sermon_list_item, viewGroup, false);
+                .inflate(R.layout.board_list_item, viewGroup, false);
         view.setFocusable(true);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        SermonEntity currentSermon = mSermonList.get(position);
+        BoardEntity entity = mList.get(position);
 
         ViewHolder viewHolder = (ViewHolder) holder;
-        viewHolder.titleView.setText(currentSermon.getTitle());
-        viewHolder.viewCountView.setText(String.format("조회수 %d회", currentSermon.getViewCount()));
-
-        String thumbnailUrl = CommonUtils.getYoutubeThumbnailUrl(currentSermon.getVideoUrl());
-        Glide.with(mContext)
-                .load(thumbnailUrl)
-                .into(viewHolder.thumbnailView);
+        viewHolder.titleView.setText(entity.getContent());
+        viewHolder.titleView.setTag(entity.getId());
+        viewHolder.writerView.setText(entity.getWriter().getDisplayName());
+        viewHolder.timestampView.setText(DateUtil.convertReadableDateTime(entity.getCreatedAt()));
+        viewHolder.likeCountView.setText(String.format("좋아요 %d", entity.getLikeCount()));
     }
 
-    /**
-     * This method simply returns the number of items to display. It is used behind the scenes
-     * to help layout our Views and for animations.
-     *
-     * @return The number of items available in our sermon
-     */
     @Override
     public int getItemCount() {
-        if (null == mSermonList) return 0;
-        return mSermonList.size();
+        if (null == mList) return 0;
+        return mList.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        return VIEW_TYPE_SERMON;
+        return VIEW_TYPE_BOARD;
     }
 
-    public void swapList(final List<SermonEntity> newList) {
-        if (mSermonList == null) {
-            mSermonList = newList;
+    public void swapList(final List<BoardEntity> newList) {
+        if (mList == null) {
+            mList = newList;
             notifyItemRangeInserted(0, newList.size());
 
         } else {
             DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
                 @Override
                 public int getOldListSize() {
-                    return mSermonList.size();
+                    return mList.size();
                 }
 
                 @Override
@@ -106,47 +97,40 @@ public class SermonAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                 @Override
                 public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    return mSermonList.get(oldItemPosition).getBbsNo() == newList.get(newItemPosition).getBbsNo();
+                    return mList.get(oldItemPosition).getId().equals(newList.get(newItemPosition).getId());
                 }
 
                 @Override
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                    SermonEntity newOne = newList.get(newItemPosition);
-                    SermonEntity oldOne = mSermonList.get(oldItemPosition);
-                    return newOne.getBbsNo() == oldOne.getBbsNo()
-                            && newOne.getDate().equals(oldOne.getDate());
+                    return mList.get(oldItemPosition).getId().equals(newList.get(newItemPosition).getId());
                 }
             });
 
-            mSermonList = newList;
+            mList = newList;
             result.dispatchUpdatesTo(this);
         }
     }
 
-    /**
-     * The interface that receives onItemClick messages.
-     */
-    public interface SermonAdapterOnItemClickHandler {
-        void onItemClick(View v, int bbsNo);
-    }
-
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        final ImageView thumbnailView;
         final TextView titleView;
-        final TextView viewCountView;
+        final TextView writerView;
+        final TextView likeCountView;
+        final TextView timestampView;
+        final ImageView avatarView;
 
         ViewHolder(View view) {
             super(view);
-            thumbnailView = view.findViewById(R.id.thumbnail);
             titleView = view.findViewById(R.id.title);
-            viewCountView = view.findViewById(R.id.view_count);
+            writerView = view.findViewById(R.id.writer);
+            likeCountView = view.findViewById(R.id.like_count);
+            timestampView = view.findViewById(R.id.timestamp);
+            avatarView = view.findViewById(R.id.avatar);
             view.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
-            mClickHandler.onItemClick(v, mSermonList.get(adapterPosition).getBbsNo());
+            mOnItemClickListener.onItemClick(v);
         }
     }
 }

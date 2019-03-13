@@ -5,10 +5,12 @@ import android.util.Log;
 
 import org.mukdongjeil.mjchurch.AppExecutors;
 import org.mukdongjeil.mjchurch.data.database.dao.SermonDao;
+import org.mukdongjeil.mjchurch.data.database.entity.BoardEntity;
 import org.mukdongjeil.mjchurch.data.database.entity.IntroduceEntity;
 import org.mukdongjeil.mjchurch.data.database.entity.SermonEntity;
 import org.mukdongjeil.mjchurch.data.database.entity.SermonReplyEntity;
 import org.mukdongjeil.mjchurch.data.database.entity.TrainingEntity;
+import org.mukdongjeil.mjchurch.data.network.BoardNetworkDataSource;
 import org.mukdongjeil.mjchurch.data.network.SermonNetworkDataSource;
 import org.mukdongjeil.mjchurch.data.network.SermonReplyNetworkDataSource;
 import org.mukdongjeil.mjchurch.util.DateUtil;
@@ -16,6 +18,7 @@ import org.mukdongjeil.mjchurch.util.DateUtil;
 import java.util.List;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.preference.PreferenceManager;
 
 public class ChurchRepository {
@@ -27,18 +30,22 @@ public class ChurchRepository {
     private final SermonDao mSermonDao;
     private final SermonNetworkDataSource mSermonNetworkDataSource;
     private final SermonReplyNetworkDataSource mSermonReplyNetworkSource;
+    private final BoardNetworkDataSource mBoardNetworkSource;
     private final AppExecutors mExecutors;
     private boolean mInitialized = false;
 
-    private LiveData<List<SermonReplyEntity>> mSermonReplyEntityLiveData;
+    private LiveData<List<SermonReplyEntity>> mSermonReplyEntitiesLiveData;
+    private LiveData<List<BoardEntity>> mBoardEntitiesLiveData;
 
     private ChurchRepository(SermonDao sermonDao,
                              SermonNetworkDataSource sermonNetworkDataSource,
                              SermonReplyNetworkDataSource sermonReplyNetworkDataSource,
+                             BoardNetworkDataSource boardNetworkDataSource,
                              AppExecutors executors) {
         mSermonDao = sermonDao;
         mSermonNetworkDataSource = sermonNetworkDataSource;
         mSermonReplyNetworkSource = sermonReplyNetworkDataSource;
+        mBoardNetworkSource = boardNetworkDataSource;
         mExecutors = executors;
 
         LiveData<SermonEntity[]> networkData = mSermonNetworkDataSource.getSermonEntity();
@@ -55,19 +62,19 @@ public class ChurchRepository {
         trainingData.observeForever(newListFromNetwork
                 -> mExecutors.diskIO().execute(()
                 -> mSermonDao.insertTraining(newListFromNetwork)));
-
     }
 
     public synchronized static ChurchRepository getInstance(
             SermonDao sermonDao,
             SermonNetworkDataSource sermonNetworkDataSource,
             SermonReplyNetworkDataSource sermonReplyNetworkDataSource,
+            BoardNetworkDataSource boardNetworkDataSource,
             AppExecutors executors) {
         Log.d(TAG, "Getting the repository");
         if (sInstance == null) {
             synchronized (LOCK) {
                 sInstance = new ChurchRepository(sermonDao, sermonNetworkDataSource,
-                        sermonReplyNetworkDataSource, executors);
+                        sermonReplyNetworkDataSource, boardNetworkDataSource, executors);
                 Log.d(TAG, "Made new repository");
             }
         }
@@ -100,12 +107,26 @@ public class ChurchRepository {
             mSermonReplyNetworkSource.getSermonReplyEntity().getValue().clear();
         }
 
-        mExecutors.diskIO().execute(()-> {
-            startFetchSermonReplyService(bbsNo);
-        });
+        mExecutors.diskIO().execute(()-> startFetchSermonReplyService(bbsNo));
+        mSermonReplyEntitiesLiveData = mSermonReplyNetworkSource.getSermonReplyEntity();
+        return mSermonReplyEntitiesLiveData;
+    }
 
-        mSermonReplyEntityLiveData = mSermonReplyNetworkSource.getSermonReplyEntity();
-        return mSermonReplyEntityLiveData;
+    public LiveData<List<BoardEntity>> getBoardList() {
+        mExecutors.networkIO().execute(()-> startFetchBoardService());
+        mBoardEntitiesLiveData = mBoardNetworkSource.getBoardList();
+        return mBoardEntitiesLiveData;
+    }
+
+    public void getBoard(MutableLiveData<BoardEntity> data, String id) {
+        if (getBoardList().getValue() != null) {
+            for (BoardEntity entity : getBoardList().getValue()) {
+                if (entity.getId().equals(id)) {
+                    data.postValue(entity);
+                    return;
+                }
+            }
+        }
     }
 
     public void addSermonReply(int bbsNo, SermonReplyEntity entity) {
@@ -117,7 +138,6 @@ public class ChurchRepository {
         mInitialized = true;
 
         mSermonNetworkDataSource.scheduleRecurringFetchSermonSync();
-
         mExecutors.diskIO().execute(()-> {
             if (isFetchNeeded()) {
                 startFetchSermonService();
@@ -155,5 +175,9 @@ public class ChurchRepository {
 
     private void startFetchSermonReplyService(int bbsNo) {
         mSermonReplyNetworkSource.startFetchService(bbsNo);
+    }
+
+    private void startFetchBoardService() {
+        mBoardNetworkSource.startFetchService();
     }
 }

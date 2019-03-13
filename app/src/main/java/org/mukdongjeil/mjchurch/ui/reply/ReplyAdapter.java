@@ -1,7 +1,6 @@
-package org.mukdongjeil.mjchurch.ui.sermon_detail;
+package org.mukdongjeil.mjchurch.ui.reply;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,8 +8,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.mukdongjeil.mjchurch.R;
-import org.mukdongjeil.mjchurch.data.database.entity.SermonReplyEntity;
+import org.mukdongjeil.mjchurch.data.database.entity.ReplyEntity;
 import org.mukdongjeil.mjchurch.util.DateUtil;
+import org.mukdongjeil.mjchurch.util.OnItemClickListener;
 
 import java.util.List;
 
@@ -18,41 +18,42 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SermonDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final String TAG = SermonDetailAdapter.class.getSimpleName();
+public class ReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final String TAG = ReplyAdapter.class.getSimpleName();
 
-    private final Context mContext;
-    private List<SermonReplyEntity> mList;
+    protected final Context mContext;
+    protected OnItemClickListener mListener;
+    private List<ReplyEntity> mList;
 
-    SermonDetailAdapter(@NonNull Context context) {
+    public ReplyAdapter(@NonNull Context context, OnItemClickListener listener) {
         mContext = context;
+        mListener = listener;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(
-                R.layout.sermon_reply_list_item, viewGroup, false);
-        view.setFocusable(true);
+                R.layout.reply_list_item, viewGroup, false);
         return new ReplyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        //Log.e(TAG, "onBindViewHolder position : " + position);
+
         ReplyViewHolder replyViewHolder = (ReplyViewHolder) viewHolder;
-        SermonReplyEntity entity = mList.get(position);
+        ReplyEntity entity = mList.get(position);
         replyViewHolder.contentView.setText(entity.getContent());
         replyViewHolder.writerView.setText(entity.getWriter().getDisplayName());
         replyViewHolder.dateView.setText(DateUtil.convertReadableDateTime(entity.getCreatedAt()));
         // TODO: feature - display avatar image on avatarView using entity.getAvatarUri()
-//        if (entity.getWriter() != null && TextUtils.isEmpty(entity.getWriter().getAvatarPath()) == false) {
+//        if (entity.getWriter() != null && !TextUtils.isEmpty(entity.getWriter().getAvatarPath()) == false) {
 //            String avatarPath = entity.getWriter().getAvatarPath();
 //            Log.e(TAG, "avatarPath : " + avatarPath);
 //            Glide.with(mContext)
 //                    .load(avatarPath)
 //                    .into(replyViewHolder.avatarView)
-//                    .onLoadFailed(mContext.getResources().getDrawable(R.mipmap.ic_launcher_round));
+//                    .onLoadFailed(mContext.getResources().getDrawable(R.drawable.ic_sentiment_very_satisfied_48dp));
 //        }
     }
 
@@ -61,7 +62,7 @@ public class SermonDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         return (null == mList) ? 0 : mList.size();
     }
 
-    void swapList(final List<SermonReplyEntity> newList) {
+    public void swapList(final List<ReplyEntity> newList) {
         if (mList == null) {
             mList = newList;
             notifyItemRangeInserted(0, newList.size());
@@ -93,7 +94,7 @@ public class SermonDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             mList.clear();
             mList.addAll(newList);
-            result.dispatchUpdatesTo(SermonDetailAdapter.this);
+            result.dispatchUpdatesTo(ReplyAdapter.this);
         }
     }
 
@@ -107,6 +108,9 @@ public class SermonDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             writerView = view.findViewById(R.id.reply_writer);
             dateView = view.findViewById(R.id.reply_date);
             avatarView = view.findViewById(R.id.reply_avatar);
+            view.findViewById(R.id.reply_container_view).setOnClickListener(v -> {
+                if (mListener != null) mListener.onItemClick(v);
+            });
         }
     }
 }

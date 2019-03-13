@@ -21,6 +21,11 @@
         android:checkable="false"
         android:title="@string/title_sermon_list" />
     <item
+        android:id="@+id/board_menu_item"
+        android:icon="@drawable/ic_list_board"
+        android:checkable="false"
+        android:title="@string/title_board" />
+    <item
         android:id="@+id/welcome_menu_item"
         android:icon="@drawable/ic_list_welcome"
         android:checkable="false"

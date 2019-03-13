@@ -11,7 +11,7 @@ import com.google.firebase.firestore.Query;
 
 import org.mukdongjeil.mjchurch.AppExecutors;
 import org.mukdongjeil.mjchurch.data.database.FirestoreDatabase;
-import org.mukdongjeil.mjchurch.data.database.entity.SermonReplyEntity;
+import org.mukdongjeil.mjchurch.data.database.entity.ReplyEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class SermonReplyNetworkDataSource {
     private FirebaseFirestore mFirestore;
     private final AppExecutors mExecutors;
 
-    private final MutableLiveData<List<SermonReplyEntity>> mDownloadedSermonReplyList;
+    private final MutableLiveData<List<ReplyEntity>> mDownloadedSermonReplyList;
 
     private SermonReplyNetworkDataSource(Context context, AppExecutors executors) {
         mContext = context;
@@ -66,9 +66,9 @@ public class SermonReplyNetworkDataSource {
                             if (task.isSuccessful()) {
                                 List<DocumentSnapshot> docs = task.getResult().getDocuments();
                                 if (docs.isEmpty() == false) {
-                                    List<SermonReplyEntity> sermonReplyList = new ArrayList<>();
+                                    List<ReplyEntity> sermonReplyList = new ArrayList<>();
                                     for (DocumentSnapshot doc : docs) {
-                                        SermonReplyEntity entity = doc.toObject(SermonReplyEntity.class);
+                                        ReplyEntity entity = doc.toObject(ReplyEntity.class);
                                         entity.setDocumentId(doc.getId());
                                         sermonReplyList.add(entity);
                                     }
@@ -87,7 +87,7 @@ public class SermonReplyNetworkDataSource {
         });
     }
 
-    public void addReply(int bbsNo, SermonReplyEntity entity) {
+    public void addReply(int bbsNo, ReplyEntity entity) {
         mExecutors.networkIO().execute(() -> {
             mFirestore.collection(FirestoreDatabase.Collection.SERMON)
                     .document(Integer.toString(bbsNo))
@@ -103,7 +103,7 @@ public class SermonReplyNetworkDataSource {
         });
     }
 
-    public LiveData<List<SermonReplyEntity>> getSermonReplyEntity() {
+    public LiveData<List<ReplyEntity>> getSermonReplyEntity() {
         return mDownloadedSermonReplyList;
     }
 

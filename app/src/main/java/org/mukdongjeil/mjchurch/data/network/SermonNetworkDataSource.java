@@ -78,7 +78,7 @@ public class SermonNetworkDataSource {
         // get sermon list
         mExecutors.networkIO().execute(() -> {
             try {
-                URL sermonRequestUrl = NetworkUtils.getUrl();
+                URL sermonRequestUrl = NetworkUtils.getSermonUrl();
 
                 String html = NetworkUtils.getResponseFromHttpUrl(sermonRequestUrl);
                 SermonHtmlParser parser = new SermonHtmlParser();

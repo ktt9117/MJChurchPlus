@@ -49,7 +49,7 @@ public final class NetworkUtils {
 
     private static final int SUNDAY_MORNING_WORSHIP_ID = 10004043;
 
-    public static URL getUrl() {
+    public static URL getSermonUrl() {
         String menuIdQuery = Integer.toString(SUNDAY_MORNING_WORSHIP_ID);
         return buildUrlWithLocationQuery(menuIdQuery);
     }

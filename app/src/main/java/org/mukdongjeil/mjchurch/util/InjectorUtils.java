@@ -21,8 +21,11 @@ import android.content.Context;
 import org.mukdongjeil.mjchurch.AppExecutors;
 import org.mukdongjeil.mjchurch.data.ChurchRepository;
 import org.mukdongjeil.mjchurch.data.database.ChurchDatabase;
+import org.mukdongjeil.mjchurch.data.network.BoardNetworkDataSource;
 import org.mukdongjeil.mjchurch.data.network.SermonNetworkDataSource;
-import org.mukdongjeil.mjchurch.data.network.SermonReplyNetworkDataSource;
+import org.mukdongjeil.mjchurch.data.network.ReplyNetworkDataSource;
+import org.mukdongjeil.mjchurch.ui.board_detail.BoardDetailViewModelFactory;
+import org.mukdongjeil.mjchurch.ui.boards.BoardViewModelFactory;
 import org.mukdongjeil.mjchurch.ui.introduce.IntroduceViewModelFactory;
 import org.mukdongjeil.mjchurch.ui.sermon_detail.SermonDetailActivityViewModelFactory;
 import org.mukdongjeil.mjchurch.ui.sermons.SermonViewModelFactory;
@@ -39,10 +42,16 @@ public class InjectorUtils {
         return SermonNetworkDataSource.getInstance(context.getApplicationContext(), executors);
     }
 
-    public static final SermonReplyNetworkDataSource provideSermonReplyNetworkDataSource(Context context) {
+    public static final ReplyNetworkDataSource provideSermonReplyNetworkDataSource(Context context) {
         provideRepository(context.getApplicationContext());
         AppExecutors executors = AppExecutors.getInstance();
-        return SermonReplyNetworkDataSource.getInstance(context.getApplicationContext(), executors);
+        return ReplyNetworkDataSource.getInstance(context.getApplicationContext(), executors);
+    }
+
+    public static final BoardNetworkDataSource provideBoardNetworkDataSource(Context context) {
+        provideRepository(context.getApplicationContext());
+        AppExecutors executors = AppExecutors.getInstance();
+        return BoardNetworkDataSource.getInstance(context.getApplicationContext(), executors);
     }
 
     public static final ChurchRepository provideRepository(Context context) {
@@ -50,10 +59,12 @@ public class InjectorUtils {
         AppExecutors executors = AppExecutors.getInstance();
         SermonNetworkDataSource networkDataSource =
                 SermonNetworkDataSource.getInstance(context.getApplicationContext(), executors);
-        SermonReplyNetworkDataSource replyNetworkDataSource =
-                SermonReplyNetworkDataSource.getInstance(context.getApplicationContext(), executors);
+        ReplyNetworkDataSource replyNetworkDataSource =
+                ReplyNetworkDataSource.getInstance(context.getApplicationContext(), executors);
+        BoardNetworkDataSource boardNetworkDataSource =
+                BoardNetworkDataSource.getInstance(context.getApplicationContext(), executors);
         return ChurchRepository.getInstance(database.sermonDao(),
-                networkDataSource, replyNetworkDataSource, executors);
+                networkDataSource, replyNetworkDataSource, boardNetworkDataSource, executors);
     }
 
     public static final SermonViewModelFactory provideSermonViewModelFactory(Context context) {
@@ -71,8 +82,18 @@ public class InjectorUtils {
         return new TrainingViewModelFactory(repository);
     }
 
+    public static final BoardViewModelFactory provideBoardViewModelFactory(Context context) {
+        ChurchRepository repository = provideRepository(context.getApplicationContext());
+        return new BoardViewModelFactory(repository);
+    }
+
+    public static final BoardDetailViewModelFactory provideBoardDetailViewModelFactory(Context context, String boardId) {
+        ChurchRepository repository = provideRepository(context.getApplicationContext());
+        return new BoardDetailViewModelFactory(repository, boardId);
+    }
+
     public static final SermonDetailActivityViewModelFactory
-        provideSermonDetailActivityViewModelFactory(Context context, int bbsNo) {
+        provideSermonDetailActivityViewModelFactory(Context context, String bbsNo) {
         ChurchRepository repository = provideRepository(context.getApplicationContext());
         return new SermonDetailActivityViewModelFactory(repository, bbsNo);
     }
