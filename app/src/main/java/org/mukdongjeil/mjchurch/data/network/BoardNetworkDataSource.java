@@ -9,6 +9,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import org.mukdongjeil.mjchurch.AppExecutors;
 import org.mukdongjeil.mjchurch.data.database.FirestoreDatabase;
@@ -79,7 +80,8 @@ public class BoardNetworkDataSource {
                 try {
                     DocumentSnapshot doc = task.getResult();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-                    if (doc.exists() && doc.getData().get(FirestoreDatabase.Field.BOARD_SYNC_DATE).toString().equals(sdf.format(new Date()))) {
+                    if (doc.exists() && doc.getData().get(FirestoreDatabase.Field.BOARD_SYNC_DATE) != null &&
+                            doc.getData().get(FirestoreDatabase.Field.BOARD_SYNC_DATE).toString().equals(sdf.format(new Date()))) {
                         Log.i(TAG, "get board list from firestore");
                         mFirestore.collection(FirestoreDatabase.Collection.BOARD)
                                 .orderBy("createdAt", Query.Direction.DESCENDING)
@@ -112,7 +114,7 @@ public class BoardNetworkDataSource {
                         updateSyncDate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
                     }
                 } catch (Exception e) {
-                    Log.e(TAG, "error occured while get the sermon list from http : " + e.getMessage());
+                    Log.e(TAG, "error occured while get the board list from http : " + e.getMessage());
                 }
             } else {
                 Log.e(TAG, "Could not get the AppSettings from firestore");
@@ -147,7 +149,7 @@ public class BoardNetworkDataSource {
             lastSyncDate.put(FirestoreDatabase.Field.BOARD_SYNC_DATE, today);
             mFirestore.collection(FirestoreDatabase.Collection.APP_SETTINGS)
                     .document(FirestoreDatabase.Document.LAST_SYNC_INFO)
-                    .set(lastSyncDate);
+                    .set(lastSyncDate, SetOptions.merge());
         });
     }
 
