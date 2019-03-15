@@ -77,6 +77,7 @@ public class BoardFragment extends BaseFragment implements OnItemClickListener {
 
         mBtnWrite = v.findViewById(R.id.btn_write);
         mBtnWrite.setOnClickListener(view -> {
+            mPosition = 0;
             startActivity(new Intent(getActivity(), BoardAddActivity.class));
         });
     }
