@@ -62,6 +62,7 @@ public class BoardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         viewHolder.titleView.setText(entity.getContent());
         viewHolder.titleView.setTag(entity.getId());
         viewHolder.writerView.setText(entity.getWriter().getDisplayName());
+        viewHolder.writerView.setTag(position);
         viewHolder.timestampView.setText(DateUtil.convertReadableDateTime(entity.getCreatedAt()));
         viewHolder.likeCountView.setText((mContext.getResources().getString(R.string.like_count, entity.getLikeCount())));
     }
