@@ -54,7 +54,7 @@ public class BoardHtmlParser {
 
         User user = new User(null, writer, null);
         long timeMillis = convertTimeMillis(date);
-        return new BoardEntity(bbsNo, user, timeMillis, 0, viewCount, content);
+        return new BoardEntity(bbsNo, user, timeMillis, 0, 0, viewCount, content);
     }
 
     private static long convertTimeMillis(String dateStr) {

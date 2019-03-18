@@ -23,6 +23,7 @@
     <string name="leave_thanks_message">감사한 것을 나눠보세요.</string>
     <string name="like">좋아요</string>
     <string name="like_count">좋아요 %d</string>
+    <string name="reply_count">댓글 %d</string>
 
     <string name="cancel">취소</string>
     <string name="add">등록</string>
