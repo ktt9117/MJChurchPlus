@@ -67,9 +67,9 @@ public class SoftKeyboard implements View.OnFocusChangeListener {
     }
 
     public interface SoftKeyboardChanged {
-        public void onSoftKeyboardHide();
+        void onSoftKeyboardHide();
 
-        public void onSoftKeyboardShow();
+        void onSoftKeyboardShow();
     }
 
     private int getLayoutCoordinates() {

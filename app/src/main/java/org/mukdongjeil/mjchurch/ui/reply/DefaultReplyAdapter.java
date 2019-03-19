@@ -94,13 +94,13 @@ public class DefaultReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
                     return mList.get(oldItemPosition).getDocumentId()
-                            == newList.get(newItemPosition).getDocumentId();
+                            .equals(newList.get(newItemPosition).getDocumentId());
                 }
 
                 @Override
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
                     return mList.get(oldItemPosition).getContent()
-                            == newList.get(newItemPosition).getContent();
+                            .equals(newList.get(newItemPosition).getContent());
                 }
             });
 
@@ -115,7 +115,7 @@ public class DefaultReplyAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             mUser = FirebaseAuth.getInstance().getCurrentUser();
         }
 
-        mSignedUp = (mUser == null) ? false : true;
+        mSignedUp = mUser != null;
     }
 
     public class ReplyViewHolder extends RecyclerView.ViewHolder {

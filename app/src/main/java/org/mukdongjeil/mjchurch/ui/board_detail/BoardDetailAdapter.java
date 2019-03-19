@@ -79,11 +79,11 @@ public class BoardDetailAdapter extends DefaultReplyAdapter {
             replyViewHolder.contentView.setText(entity.getContent());
             replyViewHolder.writerView.setText(entity.getWriter().getDisplayName());
             replyViewHolder.dateView.setText(DateUtil.convertReadableDateTime(entity.getCreatedAt()));
-            if (mSignedUp && mUser.getDisplayName().equals(entity.getWriter().getDisplayName())) {
-                replyViewHolder.moreView.setVisibility(View.VISIBLE);
-            } else {
-                replyViewHolder.moreView.setVisibility(View.GONE);
-            }
+//            if (mSignedUp && mUser.getDisplayName().equals(entity.getWriter().getDisplayName())) {
+//                replyViewHolder.moreView.setVisibility(View.VISIBLE);
+//            } else {
+//                replyViewHolder.moreView.setVisibility(View.GONE);
+//            }
 
             //TODO: feature - display avatar image on avatarView using entity.getAvatarUri()
             //            if (entity.getWriter() != null && !TextUtils.isEmpty(entity.getWriter().getAvatarPath()) == false) {
