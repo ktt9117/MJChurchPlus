@@ -37,7 +37,6 @@
 
         <activity
             android:name=".ui.sermon_detail.SermonDetailActivity"
-            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" >
         </activity>
 
@@ -49,10 +48,8 @@
 
         <activity
             android:name=".ui.board_detail.BoardDetailActivity"
-            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" >
         </activity>
-
 
         <service
             android:name=".data.network.DataSyncIntentService"

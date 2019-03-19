@@ -104,10 +104,8 @@ public class SermonFragment extends BaseFragment implements SermonAdapter.Sermon
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private ActivityOptionsCompat createTransitionOption(View v) {
-        View titleView = v.findViewById(R.id.title);
         View thumbnailView = v.findViewById(R.id.thumbnail);
-        Pair<View, String> p1 = Pair.create(titleView, titleView.getTransitionName());
-        Pair<View, String> p2 = Pair.create(thumbnailView, thumbnailView.getTransitionName());
-        return ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), p1, p2);
+        Pair<View, String> p1 = Pair.create(thumbnailView, thumbnailView.getTransitionName());
+        return ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), p1);
     }
 }

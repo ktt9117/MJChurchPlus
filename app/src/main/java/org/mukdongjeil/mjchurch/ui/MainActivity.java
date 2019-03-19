@@ -63,8 +63,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setDefaultFragment() {
-//        Fragment fragment = SermonFragment.getInstance();
-        Fragment fragment = BoardFragment.getInstance();
+        Fragment fragment = SermonFragment.getInstance();
+//        Fragment fragment = BoardFragment.getInstance();
         switchContent(fragment);
     }
 

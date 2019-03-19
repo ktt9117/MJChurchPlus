@@ -1,5 +1,6 @@
 package org.mukdongjeil.mjchurch.ui.sermon_detail;
 
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -10,11 +11,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -29,10 +29,11 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.player.listeners.YouTubeP
 
 import org.mukdongjeil.mjchurch.R;
 import org.mukdongjeil.mjchurch.data.database.entity.ReplyEntity;
-import org.mukdongjeil.mjchurch.data.database.entity.SermonEntity;
 import org.mukdongjeil.mjchurch.data.database.entity.User;
-import org.mukdongjeil.mjchurch.ui.reply.ReplyAdapter;
+import org.mukdongjeil.mjchurch.ui.extension.SoftKeyboard;
+import org.mukdongjeil.mjchurch.ui.extension.WrapContentLinearLayoutManager;
 import org.mukdongjeil.mjchurch.util.InjectorUtils;
+import org.mukdongjeil.mjchurch.util.OnItemClickListener;
 
 import java.util.Arrays;
 import java.util.List;
@@ -44,12 +45,11 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
 
-public class SermonDetailActivity extends AppCompatActivity implements
-        YouTubePlayerFullScreenListener {
+public class SermonDetailActivity extends AppCompatActivity
+        implements SoftKeyboard.SoftKeyboardChanged, YouTubePlayerFullScreenListener, OnItemClickListener {
 
     private static final String TAG = SermonDetailActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 1001;
@@ -59,17 +59,15 @@ public class SermonDetailActivity extends AppCompatActivity implements
     private SermonDetailActivityViewModel mViewModel;
 
     private RecyclerView mRecyclerView;
-    private SlideInBottomAnimationAdapter mReplyAdapter;
+    private SlideInBottomAnimationAdapter mAdapter;
     private int mPosition = RecyclerView.NO_POSITION;
 
-    private TextView mTitleView, mViewCountView, mEmptyMessageView;
-    private YouTubePlayerView mPlayerView;
-
-    private ViewGroup mBaseContainerView;
-    private ViewGroup mReplyContainerView;
     private EditText mEditView;
     private String mBbsNo;
     private FirebaseUser mUser;
+    private SoftKeyboard mKeyboard;
+    private YouTubePlayerView mPlayerView;
+    private View mReplyContainer;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,21 +103,16 @@ public class SermonDetailActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        displayEmptyView(mReplyAdapter.getItemCount() > 0 ? false : true);
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
-        mPlayerView.enableBackgroundPlayback(true);
+        if (mPlayerView != null) mPlayerView.enableBackgroundPlayback(true);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mPlayerView.release();
+        if (mPlayerView != null) mPlayerView.release();
+        if (mKeyboard != null) mKeyboard.unRegisterSoftKeyboardCallback();
     }
 
     @Override
@@ -139,9 +132,9 @@ public class SermonDetailActivity extends AppCompatActivity implements
                 callLoginUI();
                 return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -177,40 +170,27 @@ public class SermonDetailActivity extends AppCompatActivity implements
     }
 
     private void setupView() {
-        mTitleView = findViewById(R.id.detail_title);
-        mViewCountView = findViewById(R.id.detail_view_count);
-        mPlayerView = findViewById(R.id.detail_video_view);
-        mBaseContainerView = findViewById(R.id.detail_base_container);
-        mReplyContainerView = findViewById(R.id.detail_reply_container);
         mEditView = findViewById(R.id.detail_edit_view);
-        mEmptyMessageView = findViewById(R.id.empty_message_view);
-        mEmptyMessageView.setOnClickListener(view -> hideSoftKeyboard());
-        findViewById(R.id.detail_info).setOnClickListener(view -> hideSoftKeyboard());
         findViewById(R.id.detail_reply_send_button).setOnClickListener(view -> sendReply());
+        mReplyContainer = findViewById(R.id.detail_reply_container);
         mRecyclerView = findViewById(R.id.recyclerview_sermon_replies);
 
-        LinearLayoutManager layoutManager =
-                new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        WrapContentLinearLayoutManager layoutManager =
+                new WrapContentLinearLayoutManager(this, RecyclerView.VERTICAL, false);
 
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mReplyAdapter = new SlideInBottomAnimationAdapter(new ReplyAdapter(this, null));
-        mRecyclerView.setAdapter(mReplyAdapter);
+        mAdapter = new SlideInBottomAnimationAdapter(new SermonDetailAdapter(this, this));
+        mRecyclerView.setAdapter(mAdapter);
+
+        LinearLayout containerView = findViewById(R.id.container_view);
+        mKeyboard = new SoftKeyboard(containerView, (InputMethodManager) getSystemService(Service.INPUT_METHOD_SERVICE));
+        mKeyboard.setSoftKeyboardCallback(this);
+
+        mPlayerView = findViewById(R.id.detail_video_view);
     }
 
-    private void hideVideoView() {
-        if (mBaseContainerView.getVisibility() == View.VISIBLE) {
-            mBaseContainerView.animate().translationYBy(0).translationY(-150)
-                    .withEndAction(() -> {
-                        mBaseContainerView.setVisibility(View.GONE);
-                        ActionBar ab = getSupportActionBar();
-                        if (ab != null) {
-                            ab.setTitle(mTitleView.getText().toString());
-                        }
-                    });
-        }
-    }
 
     private void hideSoftKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -233,7 +213,7 @@ public class SermonDetailActivity extends AppCompatActivity implements
                 new User(mUser.getUid(), mUser.getDisplayName(), mUser.getPhotoUrl().toString()),
                 System.currentTimeMillis());
         mViewModel.addReply(mBbsNo, entity);
-        mPosition = mReplyAdapter.getItemCount();
+        mPosition = mAdapter.getItemCount();
 
         hideSoftKeyboard();
         mEditView.setText(null);
@@ -249,25 +229,41 @@ public class SermonDetailActivity extends AppCompatActivity implements
         SermonDetailActivityViewModelFactory factory =
                 InjectorUtils.provideSermonDetailActivityViewModelFactory(this.getApplicationContext(), bbsNo);
         mViewModel = ViewModelProviders.of(this, factory).get(SermonDetailActivityViewModel.class);
-
         mViewModel.getSermonEntity().observe(this, sermonEntity -> {
-            if (sermonEntity != null) showSermonDetailDataView(sermonEntity);
+            if (sermonEntity != null) {
+                ((SermonDetailAdapter) mAdapter.getWrappedAdapter()).setHeaderContent(sermonEntity);
+                mPlayerView.initialize(new YouTubePlayerInitListener() {
+                    @Override
+                    public void onInitSuccess(@NonNull YouTubePlayer youTubePlayer) {
+                        youTubePlayer.addListener(new AbstractYouTubePlayerListener() {
+                            @Override
+                            public void onReady() {
+                                super.onReady();
+                                String contentId = getYoutubeContentId(sermonEntity.getVideoUrl());
+                                if (TextUtils.isEmpty((contentId)) == false) {
+                                    youTubePlayer.loadVideo(contentId, 0);
+                                }
+                            }
+
+                            @Override
+                            public void onStateChange(@NonNull PlayerConstants.PlayerState state) {
+                                super.onStateChange(state);
+                            }
+                        });
+                    }
+                }, true);
+                mPlayerView.removeFullScreenListener(this);
+                mPlayerView.addFullScreenListener(this);
+            }
         });
 
         mViewModel.getSermonReplyList().observe(this, replyEntities -> {
-            ((ReplyAdapter) mReplyAdapter.getWrappedAdapter()).swapList(replyEntities);
-            displayEmptyView(mReplyAdapter.getItemCount() > 0 ? false : true);
-
+            ((SermonDetailAdapter) mAdapter.getWrappedAdapter()).swapList(replyEntities);
             if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
             try {
                 mRecyclerView.smoothScrollToPosition(mPosition);
             } catch (Exception e) { e. printStackTrace(); }
         });
-    }
-
-    private void displayEmptyView(boolean b) {
-        mRecyclerView.setVisibility(b ? View.GONE : View.VISIBLE);
-        mEmptyMessageView.setVisibility(b ? View.VISIBLE : View.GONE);
     }
 
     private void setupToolbar() {
@@ -287,34 +283,6 @@ public class SermonDetailActivity extends AppCompatActivity implements
         }
     }
 
-    private void showSermonDetailDataView(final SermonEntity sermonEntity) {
-        mRecyclerView.setVisibility(View.VISIBLE);
-
-        mTitleView.setText(sermonEntity.getTitle());
-        mViewCountView.setText(String.format("조회수 %d회", sermonEntity.getViewCount()));
-        mPlayerView.initialize(new YouTubePlayerInitListener() {
-            @Override
-            public void onInitSuccess(@NonNull YouTubePlayer youTubePlayer) {
-                youTubePlayer.addListener(new AbstractYouTubePlayerListener() {
-                    @Override
-                    public void onReady() {
-                        super.onReady();
-                        String contentId = getYoutubeContentId(sermonEntity.getVideoUrl());
-                        if (TextUtils.isEmpty((contentId)) == false) {
-                            youTubePlayer.loadVideo(contentId, 0);
-                        }
-                    }
-
-                    @Override
-                    public void onStateChange(@NonNull PlayerConstants.PlayerState state) {
-                        super.onStateChange(state);
-                    }
-                });
-            }
-        }, true);
-        mPlayerView.addFullScreenListener(this);
-    }
-
     private String getYoutubeContentId(String videoUrl) {
         if (TextUtils.isEmpty(videoUrl) == false && videoUrl.contains("/")) {
             return videoUrl.substring(videoUrl.lastIndexOf("/") + 1, videoUrl.length());
@@ -324,13 +292,25 @@ public class SermonDetailActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onSoftKeyboardHide() {}
+
+    @Override
+    public void onSoftKeyboardShow() {
+
+    }
+
+    @Override
     public void onYouTubePlayerEnterFullScreen() {
-        mReplyContainerView.setVisibility(View.GONE);
+        mReplyContainer.setVisibility(View.GONE);
     }
 
     @Override
     public void onYouTubePlayerExitFullScreen() {
-        mReplyContainerView.setVisibility(View.VISIBLE);
+        mReplyContainer.setVisibility(View.VISIBLE);
+    }
 
+    @Override
+    public void onItemClick(View v) {
+        hideSoftKeyboard();
     }
 }

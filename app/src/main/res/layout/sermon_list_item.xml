@@ -35,7 +35,6 @@
             android:fontFamily="sans-serif-light"
             android:textColor="@color/primary_text"
             android:textSize="@dimen/sermon_title_text_size"
-            android:transitionName="title"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/thumbnail" />
