@@ -2,18 +2,16 @@ package org.mukdongjeil.mjchurch.ui.training;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.google.android.material.tabs.TabLayout;
 
 import org.mukdongjeil.mjchurch.R;
-import org.mukdongjeil.mjchurch.data.database.entity.TrainingEntity;
+import org.mukdongjeil.mjchurch.data.database.entity.ImageEntity;
 import org.mukdongjeil.mjchurch.ui.BaseFragment;
 import org.mukdongjeil.mjchurch.util.InjectorUtils;
 
@@ -70,23 +68,27 @@ public class TrainingFragment extends BaseFragment {
     private void injectViewModel() {
         TrainingViewModelFactory factory = InjectorUtils.provideTrainingViewModelFactory(getActivity());
         mViewModel = ViewModelProviders.of(this, factory).get(TrainingViewModel.class);
-        mViewModel.getTrainingList().observe(this, trainingEntities -> {
-            mAdapter.swapList(trainingEntities);
-            if (trainingEntities != null && trainingEntities.size() != 0) {
-                closeLoadingDialog();
-            } else {
-                showLoadingDialog();
-                new Handler().postDelayed(()-> {
-                    Toast.makeText(getActivity(), R.string.get_data_failed_message, Toast.LENGTH_LONG).show();
-                    closeLoadingDialog();
-                }, 1000 * 10);
-            }
-        });
+//        mViewModel.getTrainingList().observe(this, trainingEntities -> {
+//            mAdapter.swapList(trainingEntities);
+//            if (trainingEntities != null && trainingEntities.size() != 0) {
+//                closeLoadingDialog();
+//            } else {
+//                showLoadingDialog();
+//                new Handler().postDelayed(()-> {
+//                    if (getActivity() != null) {
+//                        Toast.makeText(getActivity(), R.string.get_data_failed_message, Toast.LENGTH_LONG).show();
+//                        closeLoadingDialog();
+//                    }
+//
+//                }, 1000 * 5);
+//            }
+//        });
+        mAdapter.swapList(mViewModel.getLocalTrainingList());
     }
 
     class TrainingPagerAdapter extends PagerAdapter {
 
-        private List<TrainingEntity> mList;
+        private List<ImageEntity> mList;
         private Context mContext;
 
         public TrainingPagerAdapter(Context context) {
@@ -98,10 +100,10 @@ public class TrainingFragment extends BaseFragment {
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
             LayoutInflater inflater = LayoutInflater.from(mContext);
             ViewGroup view = (ViewGroup) inflater.inflate(R.layout.training_pager_layout, container,false);
-            TrainingEntity entity = mList.get(position);
+            ImageEntity entity = mList.get(position);
             PhotoView imgView = view.findViewById(R.id.photo_view);
             Glide.with(mContext)
-                    .load(entity.getContentUri())
+                    .load(entity.getResourceId())
                     .into(imgView);
             container.addView(view);
             return view;
@@ -132,7 +134,7 @@ public class TrainingFragment extends BaseFragment {
             return super.getPageTitle(position);
         }
 
-        public void swapList(final List<TrainingEntity> newList) {
+        public void swapList(final List<ImageEntity> newList) {
             mList = newList;
             notifyDataSetChanged();
         }

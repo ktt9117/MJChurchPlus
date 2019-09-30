@@ -2,18 +2,16 @@ package org.mukdongjeil.mjchurch.ui.introduce;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.google.android.material.tabs.TabLayout;
 
 import org.mukdongjeil.mjchurch.R;
-import org.mukdongjeil.mjchurch.data.database.entity.IntroduceEntity;
+import org.mukdongjeil.mjchurch.data.database.entity.ImageEntity;
 import org.mukdongjeil.mjchurch.ui.BaseFragment;
 import org.mukdongjeil.mjchurch.util.InjectorUtils;
 
@@ -71,23 +69,26 @@ public class IntroduceFragment extends BaseFragment {
     private void injectViewModel() {
         IntroduceViewModelFactory factory = InjectorUtils.provideIntroduceViewModelFactory(getActivity());
         mViewModel = ViewModelProviders.of(this, factory).get(IntroduceViewModel.class);
-        mViewModel.getIntroduceList().observe(this, introduceEntities -> {
-            mAdapter.swapList(introduceEntities);
-            if (introduceEntities != null && introduceEntities.size() != 0) {
-                closeLoadingDialog();
-            } else {
-                showLoadingDialog();
-                new Handler().postDelayed(()-> {
-                    Toast.makeText(getActivity(), R.string.get_data_failed_message, Toast.LENGTH_LONG).show();
-                    closeLoadingDialog();
-                }, 1000 * 10);
-            }
-        });
+//        mViewModel.getIntroduceList().observe(this, introduceEntities -> {
+//            mAdapter.swapList(introduceEntities);
+//            if (introduceEntities != null && introduceEntities.size() != 0) {
+//                closeLoadingDialog();
+//            } else {
+//                showLoadingDialog();
+//                new Handler().postDelayed(()-> {
+//                        if (getActivity() != null) {
+//                    Toast.makeText(getActivity(), R.string.get_data_failed_message, Toast.LENGTH_LONG).show();
+//                    closeLoadingDialog();
+//                        }
+//                }, 1000 * 5);
+//            }
+//        });
+        mAdapter.swapList(mViewModel.getLocalIntroduceList());
     }
 
     class IntroducePagerAdapter extends PagerAdapter {
 
-        private List<IntroduceEntity> mIntroduceList;
+        private List<ImageEntity> mIntroduceList;
         private Context mContext;
 
         public IntroducePagerAdapter(Context context) {
@@ -99,10 +100,10 @@ public class IntroduceFragment extends BaseFragment {
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
             LayoutInflater inflater = LayoutInflater.from(mContext);
             ViewGroup view = (ViewGroup) inflater.inflate(R.layout.introduce_pager_layout, container,false);
-            IntroduceEntity entity = mIntroduceList.get(position);
+            ImageEntity entity = mIntroduceList.get(position);
             PhotoView imgView = view.findViewById(R.id.photo_view);
             Glide.with(mContext)
-                    .load(entity.getContentUri())
+                    .load(entity.getResourceId())
                     .into(imgView);
             container.addView(view);
             return view;
@@ -133,7 +134,7 @@ public class IntroduceFragment extends BaseFragment {
             return super.getPageTitle(position);
         }
 
-        public void swapList(final List<IntroduceEntity> newList) {
+        public void swapList(final List<ImageEntity> newList) {
             mIntroduceList = newList;
             notifyDataSetChanged();
         }
