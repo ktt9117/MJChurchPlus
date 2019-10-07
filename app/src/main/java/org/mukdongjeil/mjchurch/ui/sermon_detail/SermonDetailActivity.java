@@ -105,7 +105,7 @@ public class SermonDetailActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        if (mPlayerView != null) mPlayerView.enableBackgroundPlayback(true);
+        //if (mPlayerView != null) mPlayerView.enableBackgroundPlayback(true);
     }
 
     @Override
