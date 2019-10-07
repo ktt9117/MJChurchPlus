@@ -13,6 +13,8 @@ import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -21,9 +23,7 @@ import com.google.firebase.firestore.SetOptions;
 
 import org.mukdongjeil.mjchurch.AppExecutors;
 import org.mukdongjeil.mjchurch.data.database.FirestoreDatabase;
-import org.mukdongjeil.mjchurch.data.database.entity.IntroduceEntity;
 import org.mukdongjeil.mjchurch.data.database.entity.SermonEntity;
-import org.mukdongjeil.mjchurch.data.database.entity.TrainingEntity;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -49,20 +49,17 @@ public class SermonNetworkDataSource {
     private static SermonNetworkDataSource sInstance;
     private final Context mContext;
     private FirebaseFirestore mFirestore;
+    private FirebaseUser mUser;
 
     private final AppExecutors mExecutors;
 
     private final MutableLiveData<SermonEntity[]> mDownloadedSermonList;
-    private final MutableLiveData<IntroduceEntity[]> mDownloadedIntroduceList;
-    private final MutableLiveData<TrainingEntity[]> mDownloadedTrainingList;
 
     private SermonNetworkDataSource(Context context, AppExecutors executors) {
         mContext = context;
         mExecutors = executors;
         mFirestore = FirebaseFirestore.getInstance();
         mDownloadedSermonList = new MutableLiveData<>();
-        mDownloadedIntroduceList = new MutableLiveData<>();
-        mDownloadedTrainingList = new MutableLiveData<>();
     }
 
     public static SermonNetworkDataSource getInstance(Context context, AppExecutors executors) {
@@ -75,6 +72,7 @@ public class SermonNetworkDataSource {
     }
 
     public void startFetchService() {
+        setupUser();
         Intent intentToFetch = new Intent(mContext, DataSyncIntentService.class);
         intentToFetch.putExtra(DataSyncIntentService.INTENT_KEY_FETCH_TYPE,
                 DataSyncIntentService.INTENT_VALUE_FETCH_TYPE_SERMON);
@@ -89,67 +87,6 @@ public class SermonNetworkDataSource {
     void fetch() {
         // get sermon list
         selectFetchSource();
-
-        // get introduce list
-        mExecutors.networkIO().execute(() -> {
-            try {
-                URL welcomeUrl = NetworkUtils.getWelcomeUrl();
-                String html = NetworkUtils.getResponseFromHttpUrl(welcomeUrl);
-                IntroduceHtmlParser parser = new IntroduceHtmlParser();
-                List<IntroduceEntity> introduceList = new ArrayList<>();
-
-                List<String> detailLinkList = parser.parseLinkList(html);
-                if (detailLinkList != null && detailLinkList.size() > 0) {
-                    for (String detailLink : detailLinkList) {
-                        URL detailUrl = NetworkUtils.makeCompleteUrl(detailLink);
-                        String detailHtml = NetworkUtils.getResponseFromHttpUrl(detailUrl);
-                        IntroduceEntity entity = parser.parse(detailHtml);
-                        if (entity != null) {
-                            introduceList.add(entity);
-                        }
-                    }
-                }
-
-                if (introduceList.size() > 0) {
-                    mDownloadedIntroduceList.postValue(introduceList.toArray(
-                            new IntroduceEntity[introduceList.size()]));
-                }
-            } catch (Exception e) {
-                // Server probably invalid
-                e.printStackTrace();
-                Log.e(TAG, "error occurred while get the introduce menu list : " + e.getMessage());
-            }
-        });
-
-        // get training list
-        mExecutors.networkIO().execute(() -> {
-            try {
-                URL trainingUrl = NetworkUtils.getTrainingUrl();
-                String html = NetworkUtils.getResponseFromHttpUrl(trainingUrl);
-                TrainingHtmlParser parser = new TrainingHtmlParser();
-                List<TrainingEntity> list = new ArrayList<>();
-
-                List<String> detailLinkList = parser.parseLinkList(html);
-                if (detailLinkList != null && detailLinkList.size() > 0) {
-                    for (String detailLink : detailLinkList) {
-                        URL detailUrl = NetworkUtils.makeCompleteUrl(detailLink);
-                        String detailHtml = NetworkUtils.getResponseFromHttpUrl(detailUrl);
-                        TrainingEntity entity = parser.parse(detailHtml);
-                        if (entity != null) {
-                            list.add(entity);
-                        }
-                    }
-                }
-
-                if (list.size() > 0) {
-                    mDownloadedTrainingList.postValue(list.toArray(new TrainingEntity[list.size()]));
-                }
-            } catch (Exception e) {
-                // Server probably invalid
-                e.printStackTrace();
-                Log.e(TAG, "error occurred while get the training menu list : " + e.getMessage());
-            }
-        });
     }
 
     private void selectFetchSource() {
@@ -166,8 +103,8 @@ public class SermonNetworkDataSource {
                 try {
                     DocumentSnapshot doc = task.getResult();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-                    if (doc.exists() && doc.getData().get(FirestoreDatabase.Field.SERMON_SYNC_DATE) != null &&
-                            doc.getData().get(FirestoreDatabase.Field.SERMON_SYNC_DATE).toString().equals(sdf.format(new Date()))) {
+                    if (mUser == null || (doc.exists() && doc.getData().get(FirestoreDatabase.Field.SERMON_SYNC_DATE) != null &&
+                            doc.getData().get(FirestoreDatabase.Field.SERMON_SYNC_DATE).toString().equals(sdf.format(new Date())))) {
                         Log.i(TAG, "get sermon list from firestore");
                         mFirestore.collection(FirestoreDatabase.Collection.SERMON)
                                 .orderBy("bbsNo", Query.Direction.DESCENDING)
@@ -192,7 +129,9 @@ public class SermonNetworkDataSource {
                                 SermonEntity entity = parser.parse(bbsNo, detailHtml);
                                 if (entity != null) {
                                     sermonList.add(entity);
-                                    createOrUpdateToFirebase(entity);
+                                    if (mUser != null) {
+                                        createOrUpdateToFirebase(entity);
+                                    }
                                 }
                             }
                         }
@@ -247,15 +186,15 @@ public class SermonNetworkDataSource {
         });
     }
 
+    private void setupUser() {
+        if (FirebaseAuth.getInstance() != null) {
+            mUser = FirebaseAuth.getInstance().getCurrentUser();
+        }
+    }
+
     public LiveData<SermonEntity[]> getSermonEntity() {
         return mDownloadedSermonList;
     }
-
-    public LiveData<IntroduceEntity[]> getIntroduceEntity() {
-        return mDownloadedIntroduceList;
-    }
-
-    public LiveData<TrainingEntity[]> getTrainingEntity() { return mDownloadedTrainingList; }
 
     public void scheduleRecurringFetchSermonSync() {
         Driver driver = new GooglePlayDriver(mContext);

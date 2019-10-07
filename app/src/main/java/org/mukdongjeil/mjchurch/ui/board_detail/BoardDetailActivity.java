@@ -20,7 +20,7 @@ import org.mukdongjeil.mjchurch.R;
 import org.mukdongjeil.mjchurch.data.database.entity.ReplyEntity;
 import org.mukdongjeil.mjchurch.data.database.entity.User;
 import org.mukdongjeil.mjchurch.ui.extension.SoftKeyboard;
-import org.mukdongjeil.mjchurch.ui.reply.BoardReplyAdapter;
+import org.mukdongjeil.mjchurch.ui.extension.WrapContentLinearLayoutManager;
 import org.mukdongjeil.mjchurch.util.InjectorUtils;
 import org.mukdongjeil.mjchurch.util.OnItemClickListener;
 
@@ -33,7 +33,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
 
@@ -75,11 +74,6 @@ public class BoardDetailActivity extends AppCompatActivity implements OnItemClic
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (mKeyboard != null) mKeyboard.unRegisterSoftKeyboardCallback();
@@ -101,7 +95,7 @@ public class BoardDetailActivity extends AppCompatActivity implements OnItemClic
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mReplyAdapter = new SlideInBottomAnimationAdapter(new BoardReplyAdapter(this, this));
+        mReplyAdapter = new SlideInBottomAnimationAdapter(new BoardDetailAdapter(this, this));
         mRecyclerView.setAdapter(mReplyAdapter);
 
         LinearLayout containerView = findViewById(R.id.container_view);
@@ -153,12 +147,12 @@ public class BoardDetailActivity extends AppCompatActivity implements OnItemClic
         BoardDetailViewModelFactory factory = InjectorUtils.provideBoardDetailViewModelFactory(this, boardId);
         mViewModel = ViewModelProviders.of(this, factory).get(BoardDetailViewModel.class);
         mViewModel.getBoard().observe(this, boardEntity -> {
-            BoardReplyAdapter adapter = ((BoardReplyAdapter) mReplyAdapter.getWrappedAdapter());
+            BoardDetailAdapter adapter = ((BoardDetailAdapter) mReplyAdapter.getWrappedAdapter());
             adapter.setHeaderContent(boardEntity);
         });
 
         mViewModel.getReplyList().observe(this, replyEntities -> {
-            BoardReplyAdapter adapter = ((BoardReplyAdapter) mReplyAdapter.getWrappedAdapter());
+            BoardDetailAdapter adapter = ((BoardDetailAdapter) mReplyAdapter.getWrappedAdapter());
             adapter.swapList(replyEntities);
             if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
             if (mPosition != 0) {
@@ -211,7 +205,13 @@ public class BoardDetailActivity extends AppCompatActivity implements OnItemClic
 
     @Override
     public void onItemClick(View v) {
-        hideSoftKeyboard();
+        if (v.getId() == R.id.btn_more) {
+            //TODO: display edit or remove function menu
+            Log.e(TAG, "btn more clicked");
+
+        } else {
+            hideSoftKeyboard();
+        }
     }
 
     @Override
@@ -220,22 +220,5 @@ public class BoardDetailActivity extends AppCompatActivity implements OnItemClic
     @Override
     public void onSoftKeyboardShow() {
         if (mRecyclerView != null) mRecyclerView.smoothScrollToPosition(mReplyAdapter.getItemCount());
-    }
-
-    //android sdk recyclerview known issue
-    //https://stackoverflow.com/questions/35653439/recycler-view-inconsistency-detected-invalid-view-holder-adapter-positionviewh/43933960
-    public class WrapContentLinearLayoutManager extends LinearLayoutManager {
-        public WrapContentLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
-            super(context, orientation, reverseLayout);
-        }
-
-        @Override
-        public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
-            try {
-                super.onLayoutChildren(recycler, state);
-            } catch (IndexOutOfBoundsException e) {
-                Log.e("Error", "IndexOutOfBoundsException in RecyclerView happens");
-            }
-        }
     }
 }

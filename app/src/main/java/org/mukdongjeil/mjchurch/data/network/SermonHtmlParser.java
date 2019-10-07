@@ -47,17 +47,10 @@ public class SermonHtmlParser {
         Element viewCountElement = element.getFirstElementByClass(ELEMENT_VIEW_COUNT);
         viewCount = Integer.parseInt(viewCountElement.getTextExtractor().toString());
 
-        Element temp = element.getFirstElementByClass(ELEMENT_SUBSTANCE_P);
-        Element iframe = temp.getFirstElement(HTMLElementName.IFRAME);
+        Element contentElement = element.getFirstElementByClass(ELEMENT_SUBSTANCE_P);
+        Element iframe = contentElement.getFirstElement(HTMLElementName.IFRAME);
         videoUrl = iframe != null ? iframe.getAttributeValue(ATTRIBUTE_SRC) : null;
-
-        List<Element> contentElementList = temp.getAllElements(HTMLElementName.DIV);
-        StringBuffer contentBuffer = new StringBuffer();
-        for (Element elem : contentElementList) {
-            contentBuffer.append(elem.getTextExtractor().toString()).append("\n");
-        }
-
-        content = contentBuffer.toString();
+        content = contentElement.getTextExtractor().toString();
 
         return new SermonEntity(Integer.parseInt(bbsNo), sermonType, title, writer, date, viewCount,
                 content, videoUrl);

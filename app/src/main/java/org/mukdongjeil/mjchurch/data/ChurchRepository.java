@@ -53,16 +53,6 @@ public class ChurchRepository {
         networkData.observeForever(newListFromNetwork
                 -> mExecutors.diskIO().execute(()
                 -> mSermonDao.insertSermon(newListFromNetwork)));
-
-        LiveData<IntroduceEntity[]> introData = mSermonNetworkDataSource.getIntroduceEntity();
-        introData.observeForever(newListFromNetwork
-                -> mExecutors.diskIO().execute(()
-                -> mSermonDao.insertIntroduce(newListFromNetwork)));
-
-        LiveData<TrainingEntity[]> trainingData = mSermonNetworkDataSource.getTrainingEntity();
-        trainingData.observeForever(newListFromNetwork
-                -> mExecutors.diskIO().execute(()
-                -> mSermonDao.insertTraining(newListFromNetwork)));
     }
 
     public synchronized static ChurchRepository getInstance(

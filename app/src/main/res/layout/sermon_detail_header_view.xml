@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/header_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/list_item_padding_vertical"
+    android:paddingLeft="@dimen/list_item_padding_horizontal"
+    android:paddingRight="@dimen/list_item_padding_horizontal"
+    android:paddingTop="@dimen/list_item_padding_vertical" >
+
+    <TextView
+        android:id="@+id/detail_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/sermon_space"
+        android:fontFamily="sans-serif-light"
+        android:textColor="@color/primary_text"
+        android:textSize="@dimen/sermon_title_text_size" />
+
+    <TextView
+        android:id="@+id/detail_view_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/secondary_text"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detail_title" />
+
+    <TextView
+        android:id="@+id/detail_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintTop_toBottomOf="@id/detail_view_count" />
+</androidx.constraintlayout.widget.ConstraintLayout>

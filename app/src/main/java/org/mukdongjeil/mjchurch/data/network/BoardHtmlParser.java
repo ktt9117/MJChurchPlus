@@ -42,19 +42,12 @@ public class BoardHtmlParser {
         date = dateElement.getTextExtractor().toString();
         Element viewCountElement = element.getFirstElementByClass(ELEMENT_VIEW_COUNT);
         viewCount = Integer.parseInt(viewCountElement.getTextExtractor().toString());
-        Element temp = element.getFirstElementByClass(ELEMENT_SUBSTANCE_P);
-
-        List<Element> contentElementList = temp.getAllElements(HTMLElementName.DIV);
-        StringBuffer contentBuffer = new StringBuffer();
-        for (Element elem : contentElementList) {
-            contentBuffer.append(elem.getTextExtractor().toString()).append("\n");
-        }
-
-        content = contentBuffer.toString();
+        Element contentElement = element.getFirstElementByClass(ELEMENT_SUBSTANCE_P);
+        content = contentElement.getTextExtractor().toString();
 
         User user = new User(null, writer, null);
         long timeMillis = convertTimeMillis(date);
-        return new BoardEntity(bbsNo, user, timeMillis, 0, viewCount, content);
+        return new BoardEntity(bbsNo, user, timeMillis, 0, 0, viewCount, content);
     }
 
     private static long convertTimeMillis(String dateStr) {

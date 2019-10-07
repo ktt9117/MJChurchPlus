@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -35,6 +37,8 @@ public class BoardNetworkDataSource {
     private static BoardNetworkDataSource sInstance;
     private final Context mContext;
     private FirebaseFirestore mFirestore;
+    private FirebaseUser mUser;
+
     private final AppExecutors mExecutors;
 
     private final MutableLiveData<List<BoardEntity>> mDownloadedList;
@@ -56,6 +60,7 @@ public class BoardNetworkDataSource {
     }
 
     public void startFetchService() {
+        setupUser();
         Intent intentToFetch = new Intent(mContext, DataSyncIntentService.class);
         intentToFetch.putExtra(DataSyncIntentService.INTENT_KEY_FETCH_TYPE,
                 DataSyncIntentService.INTENT_VALUE_FETCH_TYPE_BOARD);
@@ -78,41 +83,45 @@ public class BoardNetworkDataSource {
         mExecutors.networkIO().execute(() -> {
             if (task.isSuccessful()) {
                 try {
+                    mFirestore.collection(FirestoreDatabase.Collection.BOARD)
+                            .orderBy("createdAt", Query.Direction.DESCENDING)
+                            .get()
+                            .addOnCompleteListener((task1)-> onBoardListFirestoreResult(task1));
+
                     DocumentSnapshot doc = task.getResult();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-                    if (doc.exists() && doc.getData().get(FirestoreDatabase.Field.BOARD_SYNC_DATE) != null &&
-                            doc.getData().get(FirestoreDatabase.Field.BOARD_SYNC_DATE).toString().equals(sdf.format(new Date()))) {
-                        Log.i(TAG, "get board list from firestore");
-                        mFirestore.collection(FirestoreDatabase.Collection.BOARD)
-                                .orderBy("createdAt", Query.Direction.DESCENDING)
-                                .get()
-                                .addOnCompleteListener((task1)-> onBoardListFirestoreResult(task1));
+                    if (mUser == null || (doc.exists() && doc.getData().get(FirestoreDatabase.Field.BOARD_SYNC_DATE) != null &&
+                            doc.getData().get(FirestoreDatabase.Field.BOARD_SYNC_DATE).toString().equals(sdf.format(new Date())))) {
+                        Log.i(TAG, "already synced board data between firestore and websites");
+                        return;
 
-                    } else {
-                        Log.i(TAG, "get board list from web sites");
-                        URL url = NetworkUtils.getBoardUrl();
-                        String html = NetworkUtils.getResponseFromHttpUrl(url);
-                        List<BoardEntity> boardList = new ArrayList<>();
+                    }
 
-                        BoardHtmlParser parser = new BoardHtmlParser();
-                        List<String> linkList = parser.parseLinkList(html);
-                        if (linkList != null && linkList.size() > 0) {
-                            for (String link : linkList) {
-                                String bbsNo = link.substring(link.lastIndexOf("=") + 1);
-                                URL detailUrl = NetworkUtils.makeCompleteUrl(link);
-                                String detailHtml = NetworkUtils.getResponseFromHttpUrl(detailUrl);
+                    Log.i(TAG, "try to sync with websites board to firestore");
+                    URL url = NetworkUtils.getBoardUrl();
+                    String html = NetworkUtils.getResponseFromHttpUrl(url);
+                    List<BoardEntity> boardList = new ArrayList<>();
 
-                                BoardEntity entity = parser.parse(bbsNo, detailHtml);
-                                if (entity != null) {
-                                    boardList.add(entity);
+                    BoardHtmlParser parser = new BoardHtmlParser();
+                    List<String> linkList = parser.parseLinkList(html);
+                    if (linkList != null && linkList.size() > 0) {
+                        for (String link : linkList) {
+                            String bbsNo = link.substring(link.lastIndexOf("=") + 1);
+                            URL detailUrl = NetworkUtils.makeCompleteUrl(link);
+                            String detailHtml = NetworkUtils.getResponseFromHttpUrl(detailUrl);
+
+                            BoardEntity entity = parser.parse(bbsNo, detailHtml);
+                            if (entity != null) {
+                                boardList.add(entity);
+                                if (mUser != null) {
                                     createOrUpdateToFirebase(entity);
                                 }
                             }
                         }
-
-                        mDownloadedList.postValue(boardList);
-                        updateSyncDate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
                     }
+
+                    updateSyncDate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
+
                 } catch (Exception e) {
                     Log.e(TAG, "error occured while get the board list from http : " + e.getMessage());
                 }
@@ -182,6 +191,12 @@ public class BoardNetworkDataSource {
                     .addOnFailureListener((e)-> Log.e(TAG, "board entity could not set to firestore : " + e.getMessage()));
 
         });
+    }
+
+    private void setupUser() {
+        if (FirebaseAuth.getInstance() != null) {
+            mUser = FirebaseAuth.getInstance().getCurrentUser();
+        }
     }
 
     public LiveData<List<BoardEntity>> getBoardList() {

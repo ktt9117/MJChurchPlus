@@ -1,4 +1,4 @@
-package org.mukdongjeil.mjchurch.ui.reply;
+package org.mukdongjeil.mjchurch.ui.board_detail;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,6 +12,7 @@ import com.google.android.material.button.MaterialButton;
 import org.mukdongjeil.mjchurch.R;
 import org.mukdongjeil.mjchurch.data.database.entity.BoardEntity;
 import org.mukdongjeil.mjchurch.data.database.entity.ReplyEntity;
+import org.mukdongjeil.mjchurch.ui.reply.DefaultReplyAdapter;
 import org.mukdongjeil.mjchurch.util.DateUtil;
 import org.mukdongjeil.mjchurch.util.OnItemClickListener;
 
@@ -21,17 +22,16 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class BoardReplyAdapter extends ReplyAdapter {
-    private static final String TAG = BoardReplyAdapter.class.getSimpleName();
+public class BoardDetailAdapter extends DefaultReplyAdapter {
+    private static final String TAG = BoardDetailAdapter.class.getSimpleName();
 
     private static final int VIEW_TYPE_ITEM = 0;
     private static final int VIEW_TYPE_HEADER = 1;
-    private static final int VIEW_TYPE_FOOTER = 2;
 
     private List<ReplyEntity> mList;
-    private BoardEntity headerContent;
+    private BoardEntity mHeaderContent;
 
-    public BoardReplyAdapter(@NonNull Context context, OnItemClickListener listener) {
+    public BoardDetailAdapter(@NonNull Context context, OnItemClickListener listener) {
         super(context, listener);
     }
 
@@ -52,13 +52,17 @@ public class BoardReplyAdapter extends ReplyAdapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         if (getItemViewType(position) == VIEW_TYPE_HEADER) {
             HeaderViewHolder headerViewHolder = (HeaderViewHolder) viewHolder;
-            if (headerContent != null) {
-                headerViewHolder.contentView.setText(headerContent.getContent());
+            if (mHeaderContent != null) {
+                headerViewHolder.contentView.setText(mHeaderContent.getContent());
                 headerViewHolder.timestampView.setText(
-                        DateUtil.convertReadableDateTime(headerContent.getCreatedAt()));
-                headerViewHolder.writerView.setText(headerContent.getWriter().getDisplayName());
+                        DateUtil.convertReadableDateTime(mHeaderContent.getCreatedAt()));
+                headerViewHolder.writerView.setText(mHeaderContent.getWriter().getDisplayName());
                 headerViewHolder.likeCount.setText
-                        (mContext.getResources().getString(R.string.like_count, headerContent.getLikeCount()));
+                        (mContext.getResources().getString(R.string.like_count, mHeaderContent.getLikeCount()));
+
+                if (mSignedUp && mUser.getDisplayName().equals(mHeaderContent.getWriter().getDisplayName())) {
+                    //TODO: to enable edit, remove this posts
+                }
                 //TODO: feature - display avatar image on avatarView using entity.getAvatarUri()
 //                if (headerContent.getWriter() != null && !TextUtils.isEmpty(headerContent.getWriter().getAvatarPath()) == false) {
 //                    String avatarPath = headerContent.getWriter().getAvatarPath();
@@ -75,6 +79,12 @@ public class BoardReplyAdapter extends ReplyAdapter {
             replyViewHolder.contentView.setText(entity.getContent());
             replyViewHolder.writerView.setText(entity.getWriter().getDisplayName());
             replyViewHolder.dateView.setText(DateUtil.convertReadableDateTime(entity.getCreatedAt()));
+//            if (mSignedUp && mUser.getDisplayName().equals(entity.getWriter().getDisplayName())) {
+//                replyViewHolder.moreView.setVisibility(View.VISIBLE);
+//            } else {
+//                replyViewHolder.moreView.setVisibility(View.GONE);
+//            }
+
             //TODO: feature - display avatar image on avatarView using entity.getAvatarUri()
             //            if (entity.getWriter() != null && !TextUtils.isEmpty(entity.getWriter().getAvatarPath()) == false) {
             //                String avatarPath = entity.getWriter().getAvatarPath();
@@ -102,7 +112,7 @@ public class BoardReplyAdapter extends ReplyAdapter {
     }
 
     public void setHeaderContent(BoardEntity content) {
-        headerContent = content;
+        mHeaderContent = content;
         if (getItemCount() == 0) {
             mList = new ArrayList<>();
         }

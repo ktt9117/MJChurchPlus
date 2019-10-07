@@ -7,17 +7,20 @@ public class BoardEntity {
     private long createdAt;
     private int likeCount;
     private int viewCount;
+    private int replyCount;
     private String content;
 
     public BoardEntity() {}
 
-    public BoardEntity(String id, User writer, long timeMillis, int likeCount, int viewCount, String content) {
+    public BoardEntity(String id, User writer, long timeMillis, int likeCount, int replyCount,
+                       int viewCount, String content) {
         this.id = id;
         this.writer = writer;
         this.createdAt = timeMillis;
         this.viewCount = viewCount;
         this.likeCount = likeCount;
         this.content = content;
+        this.replyCount = replyCount;
     }
 
     public String getId() { return id; }
@@ -60,5 +63,13 @@ public class BoardEntity {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public int getReplyCount() {
+        return replyCount;
+    }
+
+    public void setReplyCount(int replyCount) {
+        this.replyCount = replyCount;
     }
 }

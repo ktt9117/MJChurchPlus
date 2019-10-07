@@ -62,8 +62,10 @@ public class BoardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         viewHolder.titleView.setText(entity.getContent());
         viewHolder.titleView.setTag(entity.getId());
         viewHolder.writerView.setText(entity.getWriter().getDisplayName());
+        viewHolder.writerView.setTag(position);
         viewHolder.timestampView.setText(DateUtil.convertReadableDateTime(entity.getCreatedAt()));
         viewHolder.likeCountView.setText((mContext.getResources().getString(R.string.like_count, entity.getLikeCount())));
+        viewHolder.replyCountView.setText((mContext.getResources().getString(R.string.reply_count, entity.getReplyCount())));
     }
 
     @Override
@@ -114,6 +116,7 @@ public class BoardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         final TextView titleView;
         final TextView writerView;
         final TextView likeCountView;
+        final TextView replyCountView;
         final TextView timestampView;
         final ImageView avatarView;
 
@@ -122,6 +125,7 @@ public class BoardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             titleView = view.findViewById(R.id.title);
             writerView = view.findViewById(R.id.writer);
             likeCountView = view.findViewById(R.id.like_count);
+            replyCountView = view.findViewById(R.id.reply_count);
             timestampView = view.findViewById(R.id.timestamp);
             avatarView = view.findViewById(R.id.avatar);
             view.setOnClickListener(v -> mOnItemClickListener.onItemClick(v));

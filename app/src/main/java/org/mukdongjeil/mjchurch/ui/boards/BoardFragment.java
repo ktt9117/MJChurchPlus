@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ public class BoardFragment extends BaseFragment implements OnItemClickListener {
     private SlideInBottomAnimationAdapter mAdapter;
 
     private BoardListViewModel mViewModel;
+    private int mPosition = 0;
 
     private static BoardFragment sInstance;
     public static BoardFragment getInstance() {
@@ -75,6 +77,7 @@ public class BoardFragment extends BaseFragment implements OnItemClickListener {
 
         mBtnWrite = v.findViewById(R.id.btn_write);
         mBtnWrite.setOnClickListener(view -> {
+            mPosition = 0;
             startActivity(new Intent(getActivity(), BoardAddActivity.class));
         });
     }
@@ -87,9 +90,10 @@ public class BoardFragment extends BaseFragment implements OnItemClickListener {
         mViewModel.getBoardList().observe(this, boardEntities -> {
             closeLoadingDialog();
             if (boardEntities != null && boardEntities.size() != 0) {
+                Log.i(TAG, "boardEntities received : " + boardEntities.size());
                 ((BoardAdapter) mAdapter.getWrappedAdapter()).swapList(boardEntities);
                 mRecyclerView.setVisibility(View.VISIBLE);
-                mRecyclerView.smoothScrollToPosition(0);
+                mRecyclerView.smoothScrollToPosition(mPosition);
 
             } else {
                 Toast.makeText(getActivity(), R.string.get_data_failed_message, Toast.LENGTH_LONG).show();
@@ -126,6 +130,7 @@ public class BoardFragment extends BaseFragment implements OnItemClickListener {
 
     @Override
     public void onItemClick(View v) {
+        mPosition = (int) v.findViewById(R.id.writer).getTag();
         Intent intent = new Intent(getActivity(), BoardDetailActivity.class);
         intent.putExtra(BoardDetailActivity.INTENT_KEY_BOARD_ID, v.findViewById(R.id.title).getTag().toString());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
