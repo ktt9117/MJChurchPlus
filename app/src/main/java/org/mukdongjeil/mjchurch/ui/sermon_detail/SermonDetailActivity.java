@@ -105,13 +105,11 @@ public class SermonDetailActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        //if (mPlayerView != null) mPlayerView.enableBackgroundPlayback(true);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mPlayerView != null) mPlayerView.release();
         if (mKeyboard != null) mKeyboard.unRegisterSoftKeyboardCallback();
     }
 
@@ -189,6 +187,7 @@ public class SermonDetailActivity extends AppCompatActivity
         mKeyboard.setSoftKeyboardCallback(this);
 
         mPlayerView = findViewById(R.id.detail_video_view);
+        getLifecycle().addObserver(mPlayerView);
     }
 
 
