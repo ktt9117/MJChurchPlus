@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'com.google.gms.google-services'  // Google Services plugin
 
 android {
     compileSdkVersion 28
@@ -7,8 +8,8 @@ android {
         applicationId "org.mukdongjeil.mjchurch"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 32
-        versionName "4.8"
+        versionCode 33
+        versionName "4.9"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -57,11 +58,11 @@ dependencies {
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:9.0.0'
 
     /** firebase component */
-    implementation 'com.google.firebase:firebase-core:16.0.6'
-    implementation 'com.google.firebase:firebase-auth:16.1.0'
-    implementation 'com.firebaseui:firebase-ui-auth:4.2.1'
-    implementation 'com.google.firebase:firebase-firestore:17.1.4'
-    implementation 'com.google.firebase:firebase-messaging:17.3.4'
+    implementation platform('com.google.firebase:firebase-bom:25.12.0')
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.firebaseui:firebase-ui-auth:6.4.0'
 
     /** ui/ux library */
     implementation 'jp.wasabeef:recyclerview-animators:3.0.0'

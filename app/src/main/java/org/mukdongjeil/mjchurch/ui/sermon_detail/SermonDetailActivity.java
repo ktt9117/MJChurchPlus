@@ -103,12 +103,6 @@ public class SermonDetailActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        //if (mPlayerView != null) mPlayerView.enableBackgroundPlayback(true);
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (mPlayerView != null) mPlayerView.release();
@@ -127,10 +121,9 @@ public class SermonDetailActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.google_sign_in:
-                callLoginUI();
-                return true;
+        if (item.getItemId() == R.id.google_sign_in) {
+            callLoginUI();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -240,7 +233,7 @@ public class SermonDetailActivity extends AppCompatActivity
                             public void onReady() {
                                 super.onReady();
                                 String contentId = getYoutubeContentId(sermonEntity.getVideoUrl());
-                                if (TextUtils.isEmpty((contentId)) == false) {
+                                if (!TextUtils.isEmpty((contentId))) {
                                     youTubePlayer.loadVideo(contentId, 0);
                                 }
                             }
@@ -278,13 +271,11 @@ public class SermonDetailActivity extends AppCompatActivity
     }
 
     private void setupUser() {
-        if (FirebaseAuth.getInstance() != null) {
-            mUser = FirebaseAuth.getInstance().getCurrentUser();
-        }
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     private String getYoutubeContentId(String videoUrl) {
-        if (TextUtils.isEmpty(videoUrl) == false && videoUrl.contains("/")) {
+        if (!TextUtils.isEmpty(videoUrl) && videoUrl.contains("/")) {
             return videoUrl.substring(videoUrl.lastIndexOf("/") + 1, videoUrl.length());
         }
 

@@ -1,6 +1,7 @@
 package org.mukdongjeil.mjchurch.data.network;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
@@ -17,19 +18,21 @@ public class SermonHtmlParser {
 
     private static final String TAG = SermonHtmlParser.class.getSimpleName();
 
-    private static final String LIST_CONTENT_CLASS = "contents bbs_list";
-    private static final String LIST_LINK_CLASS = "list_link";
+    private static final String LIST_CONTENT_CLASS = "post-group";
+    private static final String LIST_LINK_CLASS = "post-item-link";
+    private static final String POST_HEADER_CLASS = "post-header";
+    private static final String POST_BODY_CLASS = "post-body";
 
     private static final String ATTRIBUTE_HREF = "href";
     private static final String ATTRIBUTE_SRC = "src";
 
-    private static final String ELEMENT_TITLE = "bbs_ttl";
-    private static final String ELEMENT_WRITER = "bbs_writer";
-    private static final String ELEMENT_DATE = "bbs_date";
-    private static final String ELEMENT_VIEW_COUNT = "bbs_count";
-    private static final String ELEMENT_SUBSTANCE_P = "bbs_substance_p";
+    private static final String ELEMENT_TITLE = "post-title";
+    private static final String ELEMENT_WRITER = "post-author";
+    private static final String ELEMENT_DATE = "post-date";
+    private static final String ELEMENT_VIEW_COUNT = "post-view";
+    private static final String ELEMENT_FORMATTED_USER_INPUT = "formatted-user-input";
 
-    private static SermonEntity fromHtml(final String bbsNo, final Element element) {
+    private static SermonEntity fromHtml(final String bbsNo, final Element header, final Element body) {
         int sermonType = 0;
         int viewCount;
         String title;
@@ -38,18 +41,18 @@ public class SermonHtmlParser {
         String content;
         String videoUrl;
 
-        Element titleElement = element.getFirstElementByClass(ELEMENT_TITLE);
+        Element titleElement = header.getFirstElementByClass(ELEMENT_TITLE);
         title = titleElement.getTextExtractor().toString();
-        Element writerElement = element.getFirstElementByClass(ELEMENT_WRITER);
+        Element writerElement = header.getFirstElementByClass(ELEMENT_WRITER);
         writer = writerElement.getTextExtractor().toString();
-        Element dateElement = element.getFirstElementByClass(ELEMENT_DATE);
+        Element dateElement = header.getFirstElementByClass(ELEMENT_DATE);
         date = dateElement.getTextExtractor().toString();
-        Element viewCountElement = element.getFirstElementByClass(ELEMENT_VIEW_COUNT);
+        Element viewCountElement = header.getFirstElementByClass(ELEMENT_VIEW_COUNT);
         viewCount = Integer.parseInt(viewCountElement.getTextExtractor().toString());
 
-        Element contentElement = element.getFirstElementByClass(ELEMENT_SUBSTANCE_P);
-        Element iframe = contentElement.getFirstElement(HTMLElementName.IFRAME);
-        videoUrl = iframe != null ? iframe.getAttributeValue(ATTRIBUTE_SRC) : null;
+        Element contentElement = body.getFirstElementByClass(ELEMENT_FORMATTED_USER_INPUT);
+        Element iFrame = contentElement.getFirstElement(HTMLElementName.IFRAME);
+        videoUrl = iFrame != null ? iFrame.getAttributeValue(ATTRIBUTE_SRC) : null;
         content = contentElement.getTextExtractor().toString();
 
         return new SermonEntity(Integer.parseInt(bbsNo), sermonType, title, writer, date, viewCount,
@@ -59,12 +62,14 @@ public class SermonHtmlParser {
     @Nullable
     SermonEntity parse(final String bbsNo, final String html) {
         Source source = new Source(html);
-        Element contentElement = source.getFirstElementByClass(LIST_CONTENT_CLASS);
-        if (contentElement == null) {
+        Element headerElement = source.getFirstElementByClass(POST_HEADER_CLASS);
+        Element bodyElement = source.getFirstElementByClass(POST_BODY_CLASS);
+        if (headerElement == null || bodyElement == null) {
+            Log.e(TAG, "headerElement or bodyElement is null");
             return null;
         }
 
-        return fromHtml(bbsNo, contentElement);
+        return fromHtml(bbsNo, headerElement, bodyElement);
     }
 
     @Nullable
